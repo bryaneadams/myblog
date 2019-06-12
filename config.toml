@@ -71,7 +71,7 @@ disableLanguages        = [""]
       alt                 = "Hugo Future Imperfect Slim"
 
   [params.sidebar]
-    about               = "test"
+    about               = "I am an instructor at the United States Military Academy.  I currently teach MA206Y: Introduction to Data Science and Statistics.  I have served in the Army for 11 years and have a beuatiful wife and two wonderful children"
     # Sets the number of recent posts to show in the sidebar. The default value is 5.
     postAmount          = 5
     # set to show or to hide categories in the sidebar
