@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Post on Bryan Adams Data Analysis</title>
+    <link>/post/</link>
+    <description>Recent content in Post on Bryan Adams Data Analysis</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Tue, 24 Sep 2019 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/post/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Cleaning Step Data</title>
+      <link>/post/cleaning-step-data/</link>
+      <pubDate>Tue, 24 Sep 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/post/cleaning-step-data/</guid>
+      <description>My most recent paper that I published is titled, &amp;ldquo;Cardiometabolic thresholds for peak 30-min cadence and steps/day.&amp;rdquo; In the article we used multiple methods to establish thresholds for step activity. I was able to work with several outstanding and established faculty at West Point and other universities. The data was collected by NHANES using cluster sampling. This was my first time analyzing data of this nature, but fortunately there are several resources available.</description>
+    </item>
+    
+  </channel>
+</rss>
