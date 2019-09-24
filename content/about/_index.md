@@ -34,9 +34,15 @@ Updated: 17 September 2019
 
 ## Refereed Publications
 
-* **Adams B**, Fidler K, Demoes N, Aguiar E, Ducharme S, McCullough A, Moore C, Thomas D, Tudor-Locke C.  Cardiometabolic thresholds for peak 30-min cadence and steps/day, *Plos One*.  https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0219933
+* **Adams, B.**, Fidler, K., Demoes, N., Aguiar, E., Ducharme, S., McCullough, A., Moore, C., Thomas, D., Tudor-Locke, C. (2019) Cardiometabolic thresholds for peak 30-min cadence and steps/day, *Plos One*.  https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0219933
 
-* Langan R, Chi H, **Adams B**, Sesti S, Paul S, Turner A, August D, Carpizo E, Kennedy T, Grandhi M, Alexander H, Libutti S, Geffner S. Outcomes following major oncologic operations for non-AIDS defining cancers in the HIV population: A matched comparison to the general population, *World of Surgery*.  https://link.springer.com/article/10.1007/s00268-019-05151-3
+* Langan, R., Chi, H., **Adams, B.**, Sesti, S., Paul, S., Turner, A., August, D., Carpizo, E., Kennedy, T., Grandhi, M., Alexander, H., Libutti, S., Geffner, S. (2019) Outcomes following major oncologic operations for non-AIDS defining cancers in the HIV population: A matched comparison to the general population, *World of Surgery*.  https://link.springer.com/article/10.1007/s00268-019-05151-3
+
+* **Adams, B.**, Clark, N., Cummiskey, K., Pleuss, J., Turner, D., Watts, K. (Manuscript Under Review) Causal inference in Introductory Statistics Courses. *Journal of Statistics Education*.
+
+* Blyman, K., Arney, K., **Adams, B.**, Hudson, T. (Abstract Accepted, Manuscript Under Review). Does your course effectively promote creativity?: Introducing the mathematical problem solving creativity rubric. *Journal of Humanistic Mathematics* - Creativity Special Issue.
+
+* **Adams, B.**, Arney, K., Blyman, K., Bromberg, L., \& del Cuadro-Zimmerman, D. (Manuscript in Progress). Positive impacts of discovery learning assessments.
 
 ## Presentations
 
