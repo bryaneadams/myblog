@@ -39,3 +39,10 @@ CleanedSteps<-steps %>%
             Total.Steps.Per.Day=sum(PAXSTEP))
 ```
 There are several rules that are used to summarize the steps, and still much more debate going on in different circles.  The majority of the rules were developed by Dr. Catrine Tudor-Locke.  My favorite part of the code was finding 60 consecutive minutes of non-ware time.  To do this I had to use a mix of `dplyr` and `base` commands.  The following portion of the code accomplishes identifying and removing non-ware time.
+
+```{r}
+group_by(SEQN) %>%
+  mutate(check = cumsum(c(F, abs(diff(PAXSTEP)) > 0))) %>%
+  group_by(check, add = TRUE) %>%
+  filter(!(PAXSTEP == 0 & n() >= 60))
+```
