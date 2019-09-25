@@ -1,0 +1,362 @@
+---
+title: Using RSelenium for Literature Reivew
+author: Bryan Adams
+date: '2019-08-01'
+slug: using-rselenium-for-literature-reivew
+categories: []
+tags: []
+description: ''
+featured: ''
+featuredalt: ''
+featuredpath: ''
+linktitle: ''
+---
+
+
+
+<p>I was approached to see if there was a way to web scrape several articles from PubMed. I normally like to use <code>rvest</code> for web scraping, but it would not work because of the java script used to run PubMed. Luckily, <code>RSelenium</code> provides a way to easily interact with websites of this nature. This was my first use of <code>RSelenium</code>, but now I have a lot more efficient ways of using <code>RSelenium</code> and <code>rvest</code> together, although I am sure there are still better ways out there.</p>
+<div id="the-basic-scrape-function" class="section level2">
+<h2>The basic scrape function</h2>
+<p>This function is used to pull a lot of information from PubMed for each article. At first I thought I would have to make multiple functions, but this works to pull everything from authors to abstracts.</p>
+<pre class="r"><code>base_info_function = function(article){
+  
+  article$getElementAttribute(&quot;outerHTML&quot;)[[1]]%&gt;%
+    read_html()%&gt;%
+    html_text()%&gt;%
+    as.data.frame()
+  
+}</code></pre>
+</div>
+<div id="ogranize-the-vitamens-to-search" class="section level2">
+<h2>Ogranize the vitamens to search</h2>
+<pre class="r"><code>vitamens = read_csv(&quot;Count.csv&quot;)
+
+vitamens_search = vitamens%&gt;%
+  filter(n&gt;=100)%&gt;%
+  select(Content)%&gt;%
+  filter(Content!=&quot;Potassium&quot;)%&gt;%
+  filter(Content!=&quot;Chromium&quot;)%&gt;%
+  filter(Content!=&quot;Proprietary Blend&quot;)
+
+search_terms = c(paste0(&quot;(&quot;, vitamens,&quot; supplement) AND Diabetes&quot;))
+
+search_terms = vitamens_search%&gt;%
+  transmute(vitamens = paste0(&quot;(&quot;, Content,&quot; supplement) AND Diabetes&quot;))</code></pre>
+</div>
+<div id="setup-only-do-once" class="section level2">
+<h2>Setup only do once</h2>
+<pre class="r"><code>driver = rsDriver(browser = &#39;firefox&#39;)
+remote_driver = driver$client</code></pre>
+<pre class="r"><code>base_url = &#39;https://www.ncbi.nlm.nih.gov/pubmed&#39;
+
+remote_driver$navigate(base_url)</code></pre>
+</div>
+<div id="a-function-that-will-search-for-all-of-the-terms-we-want-to-search-for." class="section level2">
+<h2>A function that will search for all of the terms we want to search for.</h2>
+<p>When I web scrape I like to make functions. This is a very long function, but serves the purpose. Had I used <code>rvest</code> I would have been able to make it simpler.</p>
+<pre class="r"><code>scrape_by_vitamen = function(term){
+  
+  # Go to the homepage
+  remote_driver$navigate(base_url)
+  
+  #Find the search field
+  search_field = remote_driver$findElement(using = &#39;css&#39;, value = &#39;#term&#39;)
+  
+  #Find the search button
+  search_button = remote_driver$findElement(using = &#39;css&#39;, value = &#39;#search&#39;)
+  
+  #Send the term
+  search_field$sendKeysToElement(list(term))
+
+  #Click Search
+  search_button$clickElement()
+  
+  #Display 100 items
+  
+  #catch if not enough articles for the option to appear
+  catch = tryCatch({
+  remote_driver$findElement(using = &#39;css&#39;,
+    value = &#39;li:nth-child(3) .tgt_dark&#39;)}, error = function(e){c(&quot;ERROR&quot;)})
+  
+  if(is.character(catch)){
+    
+  }
+  else{
+    page_per_button = remote_driver$findElement(using = &#39;css&#39;,
+      value = &#39;li:nth-child(3) .tgt_dark&#39;)
+  
+    page_per_button$clickElement()
+  
+    display_100_button = remote_driver$findElement(using = &#39;css&#39;, value = &#39;#ps100&#39;)
+  
+    display_100_button$clickElement()
+    
+    Sys.sleep(15)
+  }
+  
+  #Display abstracts
+  
+  #If there is not an abstract button, then probably no articles
+  
+  catch = tryCatch({
+  remote_driver$findElement(using = &#39;css&#39;, value = &#39;li:nth-child(1) .tgt_dark&#39;)}, error = function(e){c(&quot;ERROR&quot;)})
+  
+  if(is.character(catch)){
+    
+    num_articles = remote_driver$findElement(using = &#39;css&#39;, value = &#39;.result_count&#39;)
+    
+    num = num_articles$getElementAttribute(&quot;outerHTML&quot;)[[1]]%&gt;%
+      read_html()%&gt;%
+      html_text()%&gt;%
+      sub(&quot;.*\\s&quot;,&quot;&quot;,.)
+    
+     df = cbind(term, num)%&gt;%
+       as.data.frame()
+  }
+  else{
+    
+    num_articles = remote_driver$findElement(using = &#39;css&#39;, value = &#39;.result_count&#39;)
+    
+    num = num_articles$getElementAttribute(&quot;outerHTML&quot;)[[1]]%&gt;%
+      read_html()%&gt;%
+      html_text()%&gt;%
+      sub(&quot;.*\\s&quot;,&quot;&quot;,.)
+    
+    format_button = remote_driver$findElement(using = &#39;css&#39;, value = &#39;li:nth-child(1) .tgt_dark&#39;)
+  
+    format_button$clickElement()
+    
+    Sys.sleep(10)
+    
+    abstract_button = remote_driver$findElement(using = &#39;css&#39;, value = &#39;#abstract&#39;)
+    
+    abstract_button$clickElement()
+    
+    Sys.sleep(10)
+    #Apply abstract filter
+    filter_abstracts = remote_driver$findElement(using = &#39;id&#39;, value = &#39;EntrezSystem2.PEntrez.PubMed.Pubmed_ResultsPanel.Entrez_Filters.Filter&#39;)
+  
+    filter_abstracts$clickElement()
+    
+    Sys.sleep(10)
+    #Scrape titles
+    
+    article_titles = remote_driver$findElements(using = &#39;css&#39;, value = &quot;#maincontent h1 a&quot;)
+  
+    titles = article_titles%&gt;%
+      purrr::map(base_info_function)%&gt;%
+      bind_rows()%&gt;%
+      janitor::clean_names()%&gt;%
+      rename(Title = x)
+    
+    #Scrape Authors
+    
+    article_authors = remote_driver$findElements(using = &#39;css&#39;, value = &quot;.auths, .aff p&quot;)
+  
+    if(length(article_authors)!=length(article_titles)){
+        article_authors = remote_driver$findElements(using = &#39;css&#39;, value = &quot;.auths&quot;)
+    }
+    
+    authors = article_authors%&gt;%
+      purrr::map(base_info_function)%&gt;%
+      bind_rows()%&gt;%
+      janitor::clean_names()%&gt;%
+      rename(Authors = x)
+    
+    #Scrape Abstracts
+    article_abstracts = remote_driver$findElements(using = &#39;css&#39;, value = &#39;.abstr&#39;)
+  
+    abstracts = article_abstracts%&gt;%
+      purrr::map(base_info_function)%&gt;%
+      bind_rows()%&gt;%
+      janitor::clean_names()%&gt;%
+      rename(Abstract = x)%&gt;%
+      mutate(Abstract = str_replace(Abstract, pattern = &quot;Abstract&quot;, replacement = &quot;&quot;))%&gt;%
+      mutate(Cohort = case_when(
+        str_detect(Abstract, pattern = &quot;cohort|Cohort&quot;) == T ~ 1,
+        TRUE ~ 0 
+      ))%&gt;%
+      mutate(Observational = case_when(
+        str_detect(Abstract, pattern = &quot;observational|Observational&quot;) == T ~ 1,
+        TRUE ~ 0 
+      ))%&gt;%
+      mutate(RCT = case_when(
+        str_detect(Abstract, pattern = &quot;RCT|randomized controlled trials&quot;) == T ~ 1,
+        TRUE ~ 0 
+      ))%&gt;%
+      mutate(`Meta-analysis` = case_when(
+        str_detect(Abstract, pattern = &quot;meta-analysis&quot;) == T ~ 1,
+        TRUE ~ 0 
+      ))%&gt;%
+      mutate(`Systematic review` = case_when(
+        str_detect(Abstract, pattern = &quot;systematic review&quot;) == T ~ 1,
+        TRUE ~ 0 
+      ))%&gt;%
+      mutate(`Clinical trial` = case_when(
+        str_detect(Abstract, pattern = &quot;clinical trial&quot;) == T ~ 1,
+        TRUE ~ 0 
+      ))%&gt;%
+      mutate(HbA1c = case_when(
+        str_detect(Abstract, pattern = &quot;HbA1c&quot;) == T ~ 1,
+        TRUE ~ 0 
+      ))%&gt;%
+      mutate(`Fasting glucose` = case_when(
+        str_detect(Abstract, pattern = &quot;fasting glucose&quot;) == T ~ 1,
+        TRUE ~ 0 
+      ))%&gt;%
+      mutate(`Insulin` = case_when(
+        str_detect(Abstract, pattern = &quot;insulin&quot;) == T ~ 1,
+        TRUE ~ 0 
+      ))
+      
+    
+    #Scrape Citations
+    article_citations = remote_driver$findElements(using = &#39;css&#39;, value = &#39;.aff p , .cit&#39; )
+  
+    citations = article_citations%&gt;%
+      purrr::map(base_info_function)%&gt;%
+      bind_rows()%&gt;%
+      janitor::clean_names()%&gt;%
+      rename(Citation = x)%&gt;%
+      mutate(Journal = sub(&quot;\\..*&quot;,&quot;&quot;, Citation))%&gt;%
+      mutate(Year = str_extract(Citation, &#39;(?&lt;=\\s)\\d+&#39;))%&gt;%
+      mutate(url = sub(&quot;.*doi\\:&quot;,&quot;&quot;, Citation))%&gt;%
+      mutate(url2 = sub(&quot;\\.\\s.*$&quot;,&quot;&quot;,url))%&gt;%
+      mutate(url3 = sub(&quot;[.]$&quot;,&quot;&quot;,url2))%&gt;%
+      mutate(url4 = trimws(url3))%&gt;%
+      mutate(url5 = paste(&quot;https://doi.org/&quot;,url4,sep = &quot;&quot;))%&gt;%
+      rename(URL = url5, DOI = url4)%&gt;%
+      select(Journal,Year,Citation,URL,DOI)
+    
+    ARTICLES = cbind(titles, authors, citations, abstracts)
+    
+    ARTICLES%&gt;%
+      write_csv(paste0(term,&quot;.csv&quot;))
+    
+    article_summary = ARTICLES%&gt;%
+      summarise(Cohort = sum(Cohort),
+                Observational = sum(Observational),
+                RCT = sum(RCT),
+                `Meta-Analysis` = sum(`Meta-analysis`),
+                `Systematic Review` = sum(`Systematic review`),
+                `Clinical trial` = sum(`Clinical trial`),
+                HbA1c = sum(HbA1c),
+                `Fasting glucose` = sum(`Fasting glucose`),
+                `Insulin` = sum(`Insulin`))
+    
+    df = cbind(term, num)%&gt;%
+      as.data.frame()
+    
+    df = cbind(df, article_summary)
+  }
+  
+}</code></pre>
+</div>
+<div id="call-the-function-to-scrape" class="section level2">
+<h2>Call the function to scrape</h2>
+<pre class="r"><code>scrape_by_vitamen(search_terms[2,1])
+
+summary = search_terms%&gt;%
+  unlist()%&gt;%
+  purrr::map(scrape_by_vitamen)%&gt;%
+  bind_rows()
+
+summary%&gt;%
+  write_csv(&quot;Summary.csv&quot;)</code></pre>
+</div>
+<div id="get-potassium-and-chromium" class="section level2">
+<h2>Get Potassium and Chromium</h2>
+<pre class="r"><code>article_titles = remote_driver$findElements(using = &#39;css&#39;, value = &quot;#maincontent h1 a&quot;)
+  
+    titles = article_titles%&gt;%
+      purrr::map(base_info_function)%&gt;%
+      bind_rows()%&gt;%
+      janitor::clean_names()%&gt;%
+      rename(Title = x)
+    
+article_authors = remote_driver$findElements(using = &#39;css&#39;, value = &quot;.auths&quot;)
+
+authors = article_authors%&gt;%
+      purrr::map(base_info_function)%&gt;%
+      bind_rows()%&gt;%
+      janitor::clean_names()%&gt;%
+      rename(Authors = x)%&gt;%
+      slice(-32)
+
+article_abstracts = remote_driver$findElements(using = &#39;css&#39;, value = &#39;.abstr&#39;)
+  
+    abstracts = article_abstracts%&gt;%
+      purrr::map(base_info_function)%&gt;%
+      bind_rows()%&gt;%
+      janitor::clean_names()%&gt;%
+      rename(Abstract = x)%&gt;%
+      mutate(Abstract = str_replace(Abstract, pattern = &quot;Abstract&quot;, replacement = &quot;&quot;))%&gt;%
+      mutate(Cohort = case_when(
+        str_detect(Abstract, pattern = &quot;cohort|Cohort&quot;) == T ~ 1,
+        TRUE ~ 0 
+      ))%&gt;%
+      mutate(Observational = case_when(
+        str_detect(Abstract, pattern = &quot;observational|Observational&quot;) == T ~ 1,
+        TRUE ~ 0 
+      ))%&gt;%
+      mutate(RCT = case_when(
+        str_detect(Abstract, pattern = &quot;RCT|randomized controlled trials&quot;) == T ~ 1,
+        TRUE ~ 0 
+      ))%&gt;%
+      mutate(`Meta-analysis` = case_when(
+        str_detect(Abstract, pattern = &quot;meta-analysis&quot;) == T ~ 1,
+        TRUE ~ 0 
+      ))%&gt;%
+      mutate(`Systematic review` = case_when(
+        str_detect(Abstract, pattern = &quot;systematic review&quot;) == T ~ 1,
+        TRUE ~ 0 
+      ))%&gt;%
+      mutate(`Clinical trial` = case_when(
+        str_detect(Abstract, pattern = &quot;clinical trial&quot;) == T ~ 1,
+        TRUE ~ 0 
+      ))%&gt;%
+      mutate(HbA1c = case_when(
+        str_detect(Abstract, pattern = &quot;HbA1c&quot;) == T ~ 1,
+        TRUE ~ 0 
+      ))%&gt;%
+      mutate(`Fasting glucose` = case_when(
+        str_detect(Abstract, pattern = &quot;fasting glucose&quot;) == T ~ 1,
+        TRUE ~ 0 
+      ))%&gt;%
+      mutate(`Insulin` = case_when(
+        str_detect(Abstract, pattern = &quot;insulin&quot;) == T ~ 1,
+        TRUE ~ 0 
+      ))
+    
+    article_citations = remote_driver$findElements(using = &#39;css&#39;, value = &#39;.aff p , .cit&#39; )
+  
+    citations = article_citations%&gt;%
+      purrr::map(base_info_function)%&gt;%
+      bind_rows()%&gt;%
+      janitor::clean_names()%&gt;%
+      rename(Citation = x)%&gt;%
+      mutate(Journal = sub(&quot;\\..*&quot;,&quot;&quot;, Citation))%&gt;%
+      mutate(Year = str_extract(Citation, &#39;(?&lt;=\\s)\\d+&#39;))%&gt;%
+      mutate(url = sub(&quot;.*doi\\:&quot;,&quot;&quot;, Citation))%&gt;%
+      mutate(url2 = sub(&quot;\\.\\s.*$&quot;,&quot;&quot;,url))%&gt;%
+      mutate(url3 = sub(&quot;[.]$&quot;,&quot;&quot;,url2))%&gt;%
+      mutate(url4 = trimws(url3))%&gt;%
+      mutate(url5 = paste(&quot;https://doi.org/&quot;,url4,sep = &quot;&quot;))%&gt;%
+      rename(URL = url5, DOI = url4)%&gt;%
+      select(Journal,Year,Citation,URL,DOI)
+    
+    ARTICLES = cbind(titles, authors, citations, abstracts)
+    
+    ARTICLES%&gt;%
+      write_csv(&quot;(Chromium supplement) and Diabetes.csv&quot;)</code></pre>
+<pre class="r"><code>article_summary = ARTICLES%&gt;%
+      summarise(Cohort = sum(Cohort),
+                Observational = sum(Observational),
+                RCT = sum(RCT),
+                `Meta-Analysis` = sum(`Meta-analysis`),
+                `Systematic Review` = sum(`Systematic review`),
+                `Clinical trial` = sum(`Clinical trial`),
+                HbA1c = sum(HbA1c),
+                `Fasting glucose` = sum(`Fasting glucose`),
+                `Insulin` = sum(`Insulin`))</code></pre>
+</div>
