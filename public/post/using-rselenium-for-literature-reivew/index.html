@@ -1,0 +1,842 @@
+<!doctype html>
+<html lang="en">
+  <head>
+  <meta charset="utf-8">
+<title>Using RSelenium for Literature Reivew - Bryan Adams Data Analysis</title>
+<meta name="description" content="A theme by HTML5 UP, ported by Julio Pescador. Slimmed and enhanced by Patrick Collins. Multilingual by StatnMap. Powered by Hugo.">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+
+  <meta name="generator" content="Hugo 0.55.6" />
+  
+<meta itemprop="name" content="Using RSelenium for Literature Reivew">
+<meta itemprop="description" content="I was approached to see if there was a way to web scrape several articles from PubMed. I normally like to use rvest for web scraping, but it would not work because of the java script used to run PubMed. Luckily, RSelenium provides a way to easily interact with websites of this nature. This was my first use of RSelenium, but now I have a lot more efficient ways of using RSelenium and rvest together, although I am sure there are still better ways out there.">
+
+
+<meta itemprop="datePublished" content="2019-08-01T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2019-08-01T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="1076">
+
+
+
+<meta itemprop="keywords" content="" />
+
+  <meta property="og:title" content="Using RSelenium for Literature Reivew" />
+<meta property="og:description" content="I was approached to see if there was a way to web scrape several articles from PubMed. I normally like to use rvest for web scraping, but it would not work because of the java script used to run PubMed. Luckily, RSelenium provides a way to easily interact with websites of this nature. This was my first use of RSelenium, but now I have a lot more efficient ways of using RSelenium and rvest together, although I am sure there are still better ways out there." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="/post/using-rselenium-for-literature-reivew/" />
+<meta property="article:published_time" content="2019-08-01T00:00:00&#43;00:00"/>
+<meta property="article:modified_time" content="2019-08-01T00:00:00&#43;00:00"/>
+
+  <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Using RSelenium for Literature Reivew"/>
+<meta name="twitter:description" content="I was approached to see if there was a way to web scrape several articles from PubMed. I normally like to use rvest for web scraping, but it would not work because of the java script used to run PubMed. Luckily, RSelenium provides a way to easily interact with websites of this nature. This was my first use of RSelenium, but now I have a lot more efficient ways of using RSelenium and rvest together, although I am sure there are still better ways out there."/>
+<meta name="twitter:site" content="@example"/>
+
+  
+
+  <link rel="stylesheet"
+      href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/github.min.css">
+  
+    
+      <link rel="stylesheet" href="/css/normalize.css">
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway:400,800,900|Source+Sans+Pro:400,700">
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.1.0/css/flag-icon.min.css">
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.8.6/css/academicons.min.css">
+      <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.10/css/all.css" integrity="sha384-+d0P83n9kaQMCwj8F4RJB66tzIwOKmrdb46+porD/OvrJ+37WqIM7UoBtwHO6Nlg" crossorigin="anonymous">
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.3.5/jquery.fancybox.min.css" />
+      <link rel="stylesheet" href="/css/main.min.css">
+      <link rel="stylesheet" href="/css/add-on.css">
+    
+  
+  
+</head>
+
+  <body>
+    
+<header id="site-header">
+  <nav id="site-nav">
+    <h1 class="nav-title">
+      <a href="/">
+        
+          
+            post
+          
+        
+      </a>
+    </h1>
+    <menu id="site-nav-menu" class="flyout-menu">
+      
+        <a href="/" class="link"><i class="fas fa-home">&nbsp;</i>Home</a>
+      
+        <a href="/about/" class="link"><i class="far fa-id-card">&nbsp;</i>About</a>
+      
+        <a href="/blog/" class="link"><i class="far fa-newspaper">&nbsp;</i>Blog</a>
+      
+        <a href="/categories/" class="link"><i class="fas fa-sitemap">&nbsp;</i>Categories</a>
+      
+        <a href="/contact/" class="link"><i class="far fa-envelope">&nbsp;</i>Contact</a>
+      
+      <a href="#share-menu" class="share-toggle"><i class="fas fa-share-alt">&nbsp;</i>Share</a>
+      
+
+    </menu>
+    
+
+    <a href="#share-menu" class="share-toggle"><i class="fas fa-share-alt fa-2x">&nbsp;</i></a>
+    <a href="#lang-menu" class="lang-toggle" lang="en"><span class="flag-icon flag-icon-en" alt="en"></span></a>
+    <a href="#site-nav" class="nav-toggle"><i class="fas fa-bars fa-2x"></i></a>
+  </nav>
+  <menu id="lang-menu" class="flyout-menu">
+  <a href="#" lang="en" class="active"><span class="flag-icon flag-icon-en" alt="en"></span></a>
+  
+    
+      
+    
+      
+        <a href="/fr" lang="fr" class="no-lang"><span class="flag-icon flag-icon-fr" alt="fr"></span></a>
+      
+    
+      
+        <a href="/pl" lang="pl" class="no-lang"><span class="flag-icon flag-icon-pl" alt="pl"></span></a>
+      
+    
+  
+</menu>
+
+  
+    <menu id="share-menu" class="flyout-menu">
+      <h1>Share Post</h1>
+      
+
+
+
+  
+    <a href="//twitter.com/share?url=&amp;text=&amp" target="_blank" rel="noopener" class="share-btn twitter">
+        <i class="fab fa-twitter"></i><p>&nbsp;Twitter</p>
+      </a>
+  
+
+  
+      <a href="//www.facebook.com/sharer/sharer.php?u=" target="_blank" rel="noopener" class="share-btn facebook">
+        <i class="fab fa-facebook"></i><p>&nbsp;Facebook</p>
+        </a>
+  
+
+  
+    <a href="//reddit.com/submit?url=&amp;title=" target="_blank" rel="noopener" class="share-btn reddit">
+          <i class="fab fa-reddit-alien"></i><p>&nbsp;Reddit</p>
+        </a>
+  
+
+  
+        <a href="//www.linkedin.com/shareArticle?url=&amp;title=" target="_blank" rel="noopener" class="share-btn linkedin">
+            <i class="fab fa-linkedin"></i><p>&nbsp;LinkedIn</p>
+          </a>
+  
+
+  
+        <a href="//www.stumbleupon.com/submit?url=&amp;title=" target="_blank" rel="noopener" class="share-btn stumbleupon">
+          <i class="fab fa-stumbleupon"></i><p>&nbsp;StumbleUpon</p>
+        </a>
+  
+
+  
+        <a href="//www.pinterest.com/pin/create/button/?url=&amp;description=" target="_blank" rel="noopener" class="share-btn pinterest">
+          <i class="fab fa-pinterest-p"></i><p>&nbsp;Pinterest</p>
+        </a>
+  
+
+  
+        <a href="mailto:?subject=Check out this post by &amp;body=" target="_blank" class="share-btn email">
+          <i class="fas fa-envelope"></i><p>&nbsp;Email</p>
+        </a>
+  
+
+
+    </menu>
+  
+</header>
+
+    <div id="wrapper">
+      <section id="site-intro">
+  <a href="/"><img src="/img/main/logo.jpg" class="circle" width="" alt="Hugo Future Imperfect Slim" /></a>
+  <header>
+    <h1>Bryan Adams' Blog</h1>
+  </header>
+  <main>
+    <p>Beat Navy</p>
+  </main>
+  
+    <footer>
+      <ul class="social-icons">
+        
+
+        <li><a href="//github.com/pacollins/hugo-future-imperfect-slim" target="_blank" rel="noopener" title="GitHub" class="fab fa-github"></a></li>
+
+
+
+
+
+
+<li><a href="//flickr.com/photos/example" target="_blank" rel="noopener" title="Flickr" class="fab fa-flickr"></a></li>
+
+
+
+
+<li><a href="//linkedin.com/in/example" target="_blank" rel="noopener" title="LinkedIn" class="fab fa-linkedin"></a></li>
+<li><a href="//linkedin.com/company/examplebusiness" target="_blank" rel="noopener" title="LinkedIn Company" class="fab fa-linkedin"></a></li>
+
+
+
+<li><a href="//facebook.com/example" target="_blank" rel="noopener" title="Facebook" class="fab fa-facebook"></a></li>
+<li><a href="//reddit.com/user/example" target="_blank" rel="noopener" title="Reddit" class="fab fa-reddit"></a></li>
+
+
+
+
+
+
+
+<li><a href="//instagram.com/example" target="_blank" rel="noopener" title="Instagram" class="fab fa-instagram"></a></li>
+
+<li><a href="//twitter.com/example" target="_blank" rel="noopener" title="Twitter" class="fab fa-twitter"></a></li>
+
+
+<li><a href="//pinterest.com/example" target="_blank" rel="noopener" title="Pinterest" class="fab fa-pinterest-p"></a></li>
+<li><a href="//telegram.me/example" target="_blank" rel="noopener" title="telegram" class="fab fa-telegram"></a></li>
+
+
+
+<li><a href="//researchgate.net/profile/example" target="_blank" rel="noopener" title="Research Gate"><i class="ai ai-researchgate"></i></a></li>
+<li><a href="mailto:example" target="_blank" title="Email" class="far fa-envelope"></a></li>
+
+      </ul>
+    </footer>
+  
+</section>
+
+      <main id="site-main">
+        <article class="post">
+  <header>
+  <div class="title">
+    
+        <h2><a href="/post/using-rselenium-for-literature-reivew/">Using RSelenium for Literature Reivew</a></h2>
+    
+    
+</div>
+  <div class="meta">
+    <time class="published" datetime="2019-08-01 00:00:00 &#43;0000 UTC">
+      August 1, 2019
+    </time>
+    <span class="author">Bryan Adams</span>
+    
+        <p>6 minute read</p>
+    
+  </div>
+</header>
+
+  <section id="social-share">
+    
+
+
+
+  
+    <a href="//twitter.com/share?url=&amp;text=&amp" target="_blank" rel="noopener" class="share-btn twitter">
+        <i class="fab fa-twitter"></i><p>&nbsp;Twitter</p>
+      </a>
+  
+
+  
+      <a href="//www.facebook.com/sharer/sharer.php?u=" target="_blank" rel="noopener" class="share-btn facebook">
+        <i class="fab fa-facebook"></i><p>&nbsp;Facebook</p>
+        </a>
+  
+
+  
+    <a href="//reddit.com/submit?url=&amp;title=" target="_blank" rel="noopener" class="share-btn reddit">
+          <i class="fab fa-reddit-alien"></i><p>&nbsp;Reddit</p>
+        </a>
+  
+
+  
+        <a href="//www.linkedin.com/shareArticle?url=&amp;title=" target="_blank" rel="noopener" class="share-btn linkedin">
+            <i class="fab fa-linkedin"></i><p>&nbsp;LinkedIn</p>
+          </a>
+  
+
+  
+        <a href="//www.stumbleupon.com/submit?url=&amp;title=" target="_blank" rel="noopener" class="share-btn stumbleupon">
+          <i class="fab fa-stumbleupon"></i><p>&nbsp;StumbleUpon</p>
+        </a>
+  
+
+  
+        <a href="//www.pinterest.com/pin/create/button/?url=&amp;description=" target="_blank" rel="noopener" class="share-btn pinterest">
+          <i class="fab fa-pinterest-p"></i><p>&nbsp;Pinterest</p>
+        </a>
+  
+
+  
+        <a href="mailto:?subject=Check out this post by &amp;body=" target="_blank" class="share-btn email">
+          <i class="fas fa-envelope"></i><p>&nbsp;Email</p>
+        </a>
+  
+
+
+  </section>
+  
+
+  <div class="content">
+    
+
+
+<p>I was approached to see if there was a way to web scrape several articles from PubMed. I normally like to use <code>rvest</code> for web scraping, but it would not work because of the java script used to run PubMed. Luckily, <code>RSelenium</code> provides a way to easily interact with websites of this nature. This was my first use of <code>RSelenium</code>, but now I have a lot more efficient ways of using <code>RSelenium</code> and <code>rvest</code> together, although I am sure there are still better ways out there.</p>
+<div id="the-basic-scrape-function" class="section level2">
+<h2>The basic scrape function</h2>
+<p>This function is used to pull a lot of information from PubMed for each article. At first I thought I would have to make multiple functions, but this works to pull everything from authors to abstracts.</p>
+<pre class="r"><code>base_info_function = function(article){
+  
+  article$getElementAttribute(&quot;outerHTML&quot;)[[1]]%&gt;%
+    read_html()%&gt;%
+    html_text()%&gt;%
+    as.data.frame()
+  
+}</code></pre>
+</div>
+<div id="ogranize-the-vitamens-to-search" class="section level2">
+<h2>Ogranize the vitamens to search</h2>
+<pre class="r"><code>vitamens = read_csv(&quot;Count.csv&quot;)
+
+vitamens_search = vitamens%&gt;%
+  filter(n&gt;=100)%&gt;%
+  select(Content)%&gt;%
+  filter(Content!=&quot;Potassium&quot;)%&gt;%
+  filter(Content!=&quot;Chromium&quot;)%&gt;%
+  filter(Content!=&quot;Proprietary Blend&quot;)
+
+search_terms = c(paste0(&quot;(&quot;, vitamens,&quot; supplement) AND Diabetes&quot;))
+
+search_terms = vitamens_search%&gt;%
+  transmute(vitamens = paste0(&quot;(&quot;, Content,&quot; supplement) AND Diabetes&quot;))</code></pre>
+</div>
+<div id="setup-only-do-once" class="section level2">
+<h2>Setup only do once</h2>
+<pre class="r"><code>driver = rsDriver(browser = &#39;firefox&#39;)
+remote_driver = driver$client</code></pre>
+<pre class="r"><code>base_url = &#39;https://www.ncbi.nlm.nih.gov/pubmed&#39;
+
+remote_driver$navigate(base_url)</code></pre>
+</div>
+<div id="a-function-that-will-search-for-all-of-the-terms-we-want-to-search-for." class="section level2">
+<h2>A function that will search for all of the terms we want to search for.</h2>
+<p>When I web scrape I like to make functions. This is a very long function, but serves the purpose. Had I used <code>rvest</code> I would have been able to make it simpler.</p>
+<pre class="r"><code>scrape_by_vitamen = function(term){
+  
+  # Go to the homepage
+  remote_driver$navigate(base_url)
+  
+  #Find the search field
+  search_field = remote_driver$findElement(using = &#39;css&#39;, value = &#39;#term&#39;)
+  
+  #Find the search button
+  search_button = remote_driver$findElement(using = &#39;css&#39;, value = &#39;#search&#39;)
+  
+  #Send the term
+  search_field$sendKeysToElement(list(term))
+
+  #Click Search
+  search_button$clickElement()
+  
+  #Display 100 items
+  
+  #catch if not enough articles for the option to appear
+  catch = tryCatch({
+  remote_driver$findElement(using = &#39;css&#39;,
+    value = &#39;li:nth-child(3) .tgt_dark&#39;)}, error = function(e){c(&quot;ERROR&quot;)})
+  
+  if(is.character(catch)){
+    
+  }
+  else{
+    page_per_button = remote_driver$findElement(using = &#39;css&#39;,
+      value = &#39;li:nth-child(3) .tgt_dark&#39;)
+  
+    page_per_button$clickElement()
+  
+    display_100_button = remote_driver$findElement(using = &#39;css&#39;, value = &#39;#ps100&#39;)
+  
+    display_100_button$clickElement()
+    
+    Sys.sleep(15)
+  }
+  
+  #Display abstracts
+  
+  #If there is not an abstract button, then probably no articles
+  
+  catch = tryCatch({
+  remote_driver$findElement(using = &#39;css&#39;, value = &#39;li:nth-child(1) .tgt_dark&#39;)}, error = function(e){c(&quot;ERROR&quot;)})
+  
+  if(is.character(catch)){
+    
+    num_articles = remote_driver$findElement(using = &#39;css&#39;, value = &#39;.result_count&#39;)
+    
+    num = num_articles$getElementAttribute(&quot;outerHTML&quot;)[[1]]%&gt;%
+      read_html()%&gt;%
+      html_text()%&gt;%
+      sub(&quot;.*\\s&quot;,&quot;&quot;,.)
+    
+     df = cbind(term, num)%&gt;%
+       as.data.frame()
+  }
+  else{
+    
+    num_articles = remote_driver$findElement(using = &#39;css&#39;, value = &#39;.result_count&#39;)
+    
+    num = num_articles$getElementAttribute(&quot;outerHTML&quot;)[[1]]%&gt;%
+      read_html()%&gt;%
+      html_text()%&gt;%
+      sub(&quot;.*\\s&quot;,&quot;&quot;,.)
+    
+    format_button = remote_driver$findElement(using = &#39;css&#39;, value = &#39;li:nth-child(1) .tgt_dark&#39;)
+  
+    format_button$clickElement()
+    
+    Sys.sleep(10)
+    
+    abstract_button = remote_driver$findElement(using = &#39;css&#39;, value = &#39;#abstract&#39;)
+    
+    abstract_button$clickElement()
+    
+    Sys.sleep(10)
+    #Apply abstract filter
+    filter_abstracts = remote_driver$findElement(using = &#39;id&#39;, value = &#39;EntrezSystem2.PEntrez.PubMed.Pubmed_ResultsPanel.Entrez_Filters.Filter&#39;)
+  
+    filter_abstracts$clickElement()
+    
+    Sys.sleep(10)
+    #Scrape titles
+    
+    article_titles = remote_driver$findElements(using = &#39;css&#39;, value = &quot;#maincontent h1 a&quot;)
+  
+    titles = article_titles%&gt;%
+      purrr::map(base_info_function)%&gt;%
+      bind_rows()%&gt;%
+      janitor::clean_names()%&gt;%
+      rename(Title = x)
+    
+    #Scrape Authors
+    
+    article_authors = remote_driver$findElements(using = &#39;css&#39;, value = &quot;.auths, .aff p&quot;)
+  
+    if(length(article_authors)!=length(article_titles)){
+        article_authors = remote_driver$findElements(using = &#39;css&#39;, value = &quot;.auths&quot;)
+    }
+    
+    authors = article_authors%&gt;%
+      purrr::map(base_info_function)%&gt;%
+      bind_rows()%&gt;%
+      janitor::clean_names()%&gt;%
+      rename(Authors = x)
+    
+    #Scrape Abstracts
+    article_abstracts = remote_driver$findElements(using = &#39;css&#39;, value = &#39;.abstr&#39;)
+  
+    abstracts = article_abstracts%&gt;%
+      purrr::map(base_info_function)%&gt;%
+      bind_rows()%&gt;%
+      janitor::clean_names()%&gt;%
+      rename(Abstract = x)%&gt;%
+      mutate(Abstract = str_replace(Abstract, pattern = &quot;Abstract&quot;, replacement = &quot;&quot;))%&gt;%
+      mutate(Cohort = case_when(
+        str_detect(Abstract, pattern = &quot;cohort|Cohort&quot;) == T ~ 1,
+        TRUE ~ 0 
+      ))%&gt;%
+      mutate(Observational = case_when(
+        str_detect(Abstract, pattern = &quot;observational|Observational&quot;) == T ~ 1,
+        TRUE ~ 0 
+      ))%&gt;%
+      mutate(RCT = case_when(
+        str_detect(Abstract, pattern = &quot;RCT|randomized controlled trials&quot;) == T ~ 1,
+        TRUE ~ 0 
+      ))%&gt;%
+      mutate(`Meta-analysis` = case_when(
+        str_detect(Abstract, pattern = &quot;meta-analysis&quot;) == T ~ 1,
+        TRUE ~ 0 
+      ))%&gt;%
+      mutate(`Systematic review` = case_when(
+        str_detect(Abstract, pattern = &quot;systematic review&quot;) == T ~ 1,
+        TRUE ~ 0 
+      ))%&gt;%
+      mutate(`Clinical trial` = case_when(
+        str_detect(Abstract, pattern = &quot;clinical trial&quot;) == T ~ 1,
+        TRUE ~ 0 
+      ))%&gt;%
+      mutate(HbA1c = case_when(
+        str_detect(Abstract, pattern = &quot;HbA1c&quot;) == T ~ 1,
+        TRUE ~ 0 
+      ))%&gt;%
+      mutate(`Fasting glucose` = case_when(
+        str_detect(Abstract, pattern = &quot;fasting glucose&quot;) == T ~ 1,
+        TRUE ~ 0 
+      ))%&gt;%
+      mutate(`Insulin` = case_when(
+        str_detect(Abstract, pattern = &quot;insulin&quot;) == T ~ 1,
+        TRUE ~ 0 
+      ))
+      
+    
+    #Scrape Citations
+    article_citations = remote_driver$findElements(using = &#39;css&#39;, value = &#39;.aff p , .cit&#39; )
+  
+    citations = article_citations%&gt;%
+      purrr::map(base_info_function)%&gt;%
+      bind_rows()%&gt;%
+      janitor::clean_names()%&gt;%
+      rename(Citation = x)%&gt;%
+      mutate(Journal = sub(&quot;\\..*&quot;,&quot;&quot;, Citation))%&gt;%
+      mutate(Year = str_extract(Citation, &#39;(?&lt;=\\s)\\d+&#39;))%&gt;%
+      mutate(url = sub(&quot;.*doi\\:&quot;,&quot;&quot;, Citation))%&gt;%
+      mutate(url2 = sub(&quot;\\.\\s.*$&quot;,&quot;&quot;,url))%&gt;%
+      mutate(url3 = sub(&quot;[.]$&quot;,&quot;&quot;,url2))%&gt;%
+      mutate(url4 = trimws(url3))%&gt;%
+      mutate(url5 = paste(&quot;https://doi.org/&quot;,url4,sep = &quot;&quot;))%&gt;%
+      rename(URL = url5, DOI = url4)%&gt;%
+      select(Journal,Year,Citation,URL,DOI)
+    
+    ARTICLES = cbind(titles, authors, citations, abstracts)
+    
+    ARTICLES%&gt;%
+      write_csv(paste0(term,&quot;.csv&quot;))
+    
+    article_summary = ARTICLES%&gt;%
+      summarise(Cohort = sum(Cohort),
+                Observational = sum(Observational),
+                RCT = sum(RCT),
+                `Meta-Analysis` = sum(`Meta-analysis`),
+                `Systematic Review` = sum(`Systematic review`),
+                `Clinical trial` = sum(`Clinical trial`),
+                HbA1c = sum(HbA1c),
+                `Fasting glucose` = sum(`Fasting glucose`),
+                `Insulin` = sum(`Insulin`))
+    
+    df = cbind(term, num)%&gt;%
+      as.data.frame()
+    
+    df = cbind(df, article_summary)
+  }
+  
+}</code></pre>
+</div>
+<div id="call-the-function-to-scrape" class="section level2">
+<h2>Call the function to scrape</h2>
+<pre class="r"><code>scrape_by_vitamen(search_terms[2,1])
+
+summary = search_terms%&gt;%
+  unlist()%&gt;%
+  purrr::map(scrape_by_vitamen)%&gt;%
+  bind_rows()
+
+summary%&gt;%
+  write_csv(&quot;Summary.csv&quot;)</code></pre>
+</div>
+<div id="get-potassium-and-chromium" class="section level2">
+<h2>Get Potassium and Chromium</h2>
+<pre class="r"><code>article_titles = remote_driver$findElements(using = &#39;css&#39;, value = &quot;#maincontent h1 a&quot;)
+  
+    titles = article_titles%&gt;%
+      purrr::map(base_info_function)%&gt;%
+      bind_rows()%&gt;%
+      janitor::clean_names()%&gt;%
+      rename(Title = x)
+    
+article_authors = remote_driver$findElements(using = &#39;css&#39;, value = &quot;.auths&quot;)
+
+authors = article_authors%&gt;%
+      purrr::map(base_info_function)%&gt;%
+      bind_rows()%&gt;%
+      janitor::clean_names()%&gt;%
+      rename(Authors = x)%&gt;%
+      slice(-32)
+
+article_abstracts = remote_driver$findElements(using = &#39;css&#39;, value = &#39;.abstr&#39;)
+  
+    abstracts = article_abstracts%&gt;%
+      purrr::map(base_info_function)%&gt;%
+      bind_rows()%&gt;%
+      janitor::clean_names()%&gt;%
+      rename(Abstract = x)%&gt;%
+      mutate(Abstract = str_replace(Abstract, pattern = &quot;Abstract&quot;, replacement = &quot;&quot;))%&gt;%
+      mutate(Cohort = case_when(
+        str_detect(Abstract, pattern = &quot;cohort|Cohort&quot;) == T ~ 1,
+        TRUE ~ 0 
+      ))%&gt;%
+      mutate(Observational = case_when(
+        str_detect(Abstract, pattern = &quot;observational|Observational&quot;) == T ~ 1,
+        TRUE ~ 0 
+      ))%&gt;%
+      mutate(RCT = case_when(
+        str_detect(Abstract, pattern = &quot;RCT|randomized controlled trials&quot;) == T ~ 1,
+        TRUE ~ 0 
+      ))%&gt;%
+      mutate(`Meta-analysis` = case_when(
+        str_detect(Abstract, pattern = &quot;meta-analysis&quot;) == T ~ 1,
+        TRUE ~ 0 
+      ))%&gt;%
+      mutate(`Systematic review` = case_when(
+        str_detect(Abstract, pattern = &quot;systematic review&quot;) == T ~ 1,
+        TRUE ~ 0 
+      ))%&gt;%
+      mutate(`Clinical trial` = case_when(
+        str_detect(Abstract, pattern = &quot;clinical trial&quot;) == T ~ 1,
+        TRUE ~ 0 
+      ))%&gt;%
+      mutate(HbA1c = case_when(
+        str_detect(Abstract, pattern = &quot;HbA1c&quot;) == T ~ 1,
+        TRUE ~ 0 
+      ))%&gt;%
+      mutate(`Fasting glucose` = case_when(
+        str_detect(Abstract, pattern = &quot;fasting glucose&quot;) == T ~ 1,
+        TRUE ~ 0 
+      ))%&gt;%
+      mutate(`Insulin` = case_when(
+        str_detect(Abstract, pattern = &quot;insulin&quot;) == T ~ 1,
+        TRUE ~ 0 
+      ))
+    
+    article_citations = remote_driver$findElements(using = &#39;css&#39;, value = &#39;.aff p , .cit&#39; )
+  
+    citations = article_citations%&gt;%
+      purrr::map(base_info_function)%&gt;%
+      bind_rows()%&gt;%
+      janitor::clean_names()%&gt;%
+      rename(Citation = x)%&gt;%
+      mutate(Journal = sub(&quot;\\..*&quot;,&quot;&quot;, Citation))%&gt;%
+      mutate(Year = str_extract(Citation, &#39;(?&lt;=\\s)\\d+&#39;))%&gt;%
+      mutate(url = sub(&quot;.*doi\\:&quot;,&quot;&quot;, Citation))%&gt;%
+      mutate(url2 = sub(&quot;\\.\\s.*$&quot;,&quot;&quot;,url))%&gt;%
+      mutate(url3 = sub(&quot;[.]$&quot;,&quot;&quot;,url2))%&gt;%
+      mutate(url4 = trimws(url3))%&gt;%
+      mutate(url5 = paste(&quot;https://doi.org/&quot;,url4,sep = &quot;&quot;))%&gt;%
+      rename(URL = url5, DOI = url4)%&gt;%
+      select(Journal,Year,Citation,URL,DOI)
+    
+    ARTICLES = cbind(titles, authors, citations, abstracts)
+    
+    ARTICLES%&gt;%
+      write_csv(&quot;(Chromium supplement) and Diabetes.csv&quot;)</code></pre>
+<pre class="r"><code>article_summary = ARTICLES%&gt;%
+      summarise(Cohort = sum(Cohort),
+                Observational = sum(Observational),
+                RCT = sum(RCT),
+                `Meta-Analysis` = sum(`Meta-analysis`),
+                `Systematic Review` = sum(`Systematic review`),
+                `Clinical trial` = sum(`Clinical trial`),
+                HbA1c = sum(HbA1c),
+                `Fasting glucose` = sum(`Fasting glucose`),
+                `Insulin` = sum(`Insulin`))</code></pre>
+</div>
+
+  </div>
+  <footer>
+    <ul class="stats">
+  
+    
+    
+      <li class="categories">
+        <ul>
+          
+            
+            <li><a class="article-category-link" href="/categories/using-rselenium">Using RSelenium</a></li>
+          
+        </ul>
+      </li>
+    
+  
+  
+    
+    
+  
+</ul>
+
+  </footer>
+</article>
+<article class="post">
+  
+
+</article>
+<div class="pagination">
+  
+  
+    <a href="/post/using-rselenium/" class="button big next">Using RSelenium <i class="fas fa-angle-right"></i></a>
+  
+</div>
+
+
+      </main>
+      <section id="site-sidebar">
+  <section id="recent-posts">
+    <header>
+      <h1>Recent posts</h1>
+    </header>
+    
+    <article class="mini-post">
+      <section>
+        
+
+      </section>
+      <header>
+        <h1><a href="/post/cleaning-step-data/">Cleaning Step Data</a></h1>
+        <time class="published" datetime="">September 24, 2019</time>
+      </header>
+    </article>
+    
+    <article class="mini-post">
+      <section>
+        
+
+      </section>
+      <header>
+        <h1><a href="/post/">Post</a></h1>
+        <time class="published" datetime="">September 24, 2019</time>
+      </header>
+    </article>
+    
+    <article class="mini-post">
+      <section>
+        
+
+      </section>
+      <header>
+        <h1><a href="/post/using-rselenium/">Using RSelenium</a></h1>
+        <time class="published" datetime="">September 24, 2019</time>
+      </header>
+    </article>
+    
+    <article class="mini-post">
+      <section>
+        
+
+      </section>
+      <header>
+        <h1><a href="/post/using-rselenium-for-literature-reivew/">Using RSelenium for Literature Reivew</a></h1>
+        <time class="published" datetime="">August 1, 2019</time>
+      </header>
+    </article>
+    
+    
+  </section>
+
+  
+    
+      <section id="categories">
+        <header>
+          <h1><a href="/categories">Categories</a></h1>
+        </header>
+        <ul>
+          
+            
+          
+          
+          <li>
+            
+              <a href="/categories/using-rselenium/">using-rselenium<span class="count">1</span></a>
+            
+          
+          </li>
+        </ul>
+      </section>
+    
+  
+
+  <section id="mini-bio">
+    <header>
+      <h1>About</h1>
+    </header>
+    <p>I am an assistant professor at the United States Military Academy.  I currently teach MA206Y: Introduction to Data Science and Statistics.  I have served in the Army for 11 years and have a beuatiful wife and two wonderful children</p>
+    <footer>
+      <a href="/about" class="button">Learn More</a>
+    </footer>
+  </section>
+</section>
+
+      <footer id="site-footer">
+  
+      <ul class="social-icons">
+        
+
+        <li><a href="//github.com/pacollins/hugo-future-imperfect-slim" target="_blank" rel="noopener" title="GitHub" class="fab fa-github"></a></li>
+
+
+
+
+
+
+<li><a href="//flickr.com/photos/example" target="_blank" rel="noopener" title="Flickr" class="fab fa-flickr"></a></li>
+
+
+
+
+<li><a href="//linkedin.com/in/example" target="_blank" rel="noopener" title="LinkedIn" class="fab fa-linkedin"></a></li>
+<li><a href="//linkedin.com/company/examplebusiness" target="_blank" rel="noopener" title="LinkedIn Company" class="fab fa-linkedin"></a></li>
+
+
+
+<li><a href="//facebook.com/example" target="_blank" rel="noopener" title="Facebook" class="fab fa-facebook"></a></li>
+<li><a href="//reddit.com/user/example" target="_blank" rel="noopener" title="Reddit" class="fab fa-reddit"></a></li>
+
+
+
+
+
+
+
+<li><a href="//instagram.com/example" target="_blank" rel="noopener" title="Instagram" class="fab fa-instagram"></a></li>
+
+<li><a href="//twitter.com/example" target="_blank" rel="noopener" title="Twitter" class="fab fa-twitter"></a></li>
+
+
+<li><a href="//pinterest.com/example" target="_blank" rel="noopener" title="Pinterest" class="fab fa-pinterest-p"></a></li>
+<li><a href="//telegram.me/example" target="_blank" rel="noopener" title="telegram" class="fab fa-telegram"></a></li>
+
+
+
+<li><a href="//researchgate.net/profile/example" target="_blank" rel="noopener" title="Research Gate"><i class="ai ai-researchgate"></i></a></li>
+<li><a href="mailto:example" target="_blank" title="Email" class="far fa-envelope"></a></li>
+
+      </ul>
+  
+  <p class="copyright">
+    
+      &copy; 2019
+      
+        Bryan Adams Data Analysis
+      
+    .
+    Powered by <a href="//gohugo.io" target="_blank" rel="noopener">Hugo</a>
+  </p>
+</footer>
+<a id="back-to-top" href="#" class="fas fa-arrow-up fa-2x"></a>
+
+      
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/languages/html.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/languages/css.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/languages/js.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/languages/toml.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+
+
+  
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/skel/3.0.1/skel.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.3.5/jquery.fancybox.min.js"></script>
+  <script src=/js/util.js></script>
+  <script src=/js/main.js></script>
+  <script src=/js/add-on.js></script>
+  
+
+
+
+    </div>
+  </body>
+</html>

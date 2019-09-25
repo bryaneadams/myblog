@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Using RSelenium on Bryan Adams Data Analysis</title>
+    <link>/categories/using-rselenium/</link>
+    <description>Recent content in Using RSelenium on Bryan Adams Data Analysis</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Thu, 01 Aug 2019 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/categories/using-rselenium/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Using RSelenium for Literature Reivew</title>
+      <link>/post/using-rselenium-for-literature-reivew/</link>
+      <pubDate>Thu, 01 Aug 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/post/using-rselenium-for-literature-reivew/</guid>
+      <description>I was approached to see if there was a way to web scrape several articles from PubMed. I normally like to use rvest for web scraping, but it would not work because of the java script used to run PubMed. Luckily, RSelenium provides a way to easily interact with websites of this nature. This was my first use of RSelenium, but now I have a lot more efficient ways of using RSelenium and rvest together, although I am sure there are still better ways out there.</description>
+    </item>
+    
+  </channel>
+</rss>
