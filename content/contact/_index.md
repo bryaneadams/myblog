@@ -1,6 +1,6 @@
 ---
 contactanswertime: 24
-contactemail: Your Email
+contactemail: bryan.adams@westpoint.edu
 contactlang: en
 contactmessage: Your Message
 contactname: Your name

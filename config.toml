@@ -111,16 +111,16 @@ disableLanguages        = [""]
     weight            = 1
 
   [[menu.main]]
-    name              = "About"
+    name              = "Curriculum vitae"
     url               = "/about/"
     identifier        = "far fa-id-card"
     weight            = 2
 
-  [[menu.main]]
-    name              = "Blog"
-    url               = "/blog/"
-    identifier        = "far fa-newspaper"
-    weight            = 3
+#  [[menu.main]]
+#    name              = "Blog"
+#    url               = "/blog/"
+#    identifier        = "far fa-newspaper"
+#    weight            = 3
 
   [[menu.main]]
     name              = "Categories"
@@ -141,24 +141,24 @@ disableLanguages        = [""]
     LanguageName        = "English"
     weight              = 1
 
-  [Languages.fr]
-    languageCode        = "fr"
-    LanguageName        = "Français"
-    title               = "Hugo Future Imperfect Slim in fr"
-    description         = "Un thème de HTML5 UP, porté par Julio Pescador. Slimmed et amélioré par Patrick Collins. Multilingue par StatnMap. Propulsé par Hugo. "
-    weight              = 2
+#  [Languages.fr]
+#    languageCode        = "fr"
+#    LanguageName        = "Français"
+#    title               = "Hugo Future Imperfect Slim in fr"
+#    description         = "Un thème de HTML5 UP, porté par Julio Pescador. Slimmed et amélioré par Patrick Collins. Multilingue par StatnMap. Propulsé par Hugo. "
+#    weight              = 2
 
-    [[Languages.fr.menu.main]]
-      name              = "Accueil"
-      url               = "/"
-      identifier        = "fas fa-home"
-      weight            = 1
+#    [[Languages.fr.menu.main]]
+#      name              = "Accueil"
+#      url               = "/"
+#      identifier        = "fas fa-home"
+#      weight            = 1
 
-    [[Languages.fr.menu.main]]
-      name              = "About"
-      url               = "/about/"
-      identifier        = "far fa-id-card"
-      weight            = 2
+#    [[Languages.fr.menu.main]]
+#      name              = "About"
+#      url               = "/about/"
+#      identifier        = "far fa-id-card"
+#      weight            = 2
 
     [[Languages.fr.menu.main]]
       name              = "Blog"
@@ -220,47 +220,47 @@ disableLanguages        = [""]
 # and socialAppearAtBottom.
 [social]
   # Coding Communities
-  github                = "pacollins/hugo-future-imperfect-slim"
-  gitlab                = ""
+  github                = ""
+  #gitlab                = ""
   stackoverflow         = "" # User Number
-  bitbucket             = ""
-  jsfiddle              = ""
-  codepen               = ""
+  #bitbucket             = ""
+  #jsfiddle              = ""
+  #codepen               = ""
   # Visual Art Communities
-  deviantart            = ""
-  flickr                = "example"
-  behance               = ""
-  dribbble              = ""
+  #deviantart            = ""
+  #flickr                = "example"
+  #behance               = ""
+  #dribbble              = ""
   # Publishing Communities
-  wordpress             = ""
-  medium                = ""
+  #wordpress             = ""
+  #medium                = ""
   # Professional/Business Oriented Communities
-  linkedin              = "example"
-  linkedin_company      = "examplebusiness"
-  foursquare            = ""
-  xing                  = ""
-  slideshare            = ""
+  #linkedin              = "example"
+  #linkedin_company      = "examplebusiness"
+  #foursquare            = ""
+  #xing                  = ""
+  #slideshare            = ""
   # Social Networks
-  facebook              = "example"
-  googleplus            = ""
-  reddit                = "example"
-  quora                 = ""
-  youtube               = ""
-  vimeo                 = ""
-  whatsapp              = "" # WhatsApp Number
+  #facebook              = "example"
+  #googleplus            = ""
+  #reddit                = "example"
+  #quora                 = ""
+  #youtube               = ""
+  #vimeo                 = ""
+  #whatsapp              = "" # WhatsApp Number
     # WeChat and QQ need testing.
-    wechat              = ""
-    qq                  = "" # User ID Number
-  instagram             = "example"
-  tumblr                = ""
-  twitter               = "example"
-  skype                 = ""
-  snapchat              = ""
-  pinterest             = "example"
-  telegram              = "example"
-  vine                  = ""
-  googlescholar         = ""
-  orcid                 = ""
-  researchgate          = "example"
+   # wechat              = ""
+    #qq                  = "" # User ID Number
+  #instagram             = "example"
+  #tumblr                = ""
+  twitter               = "@statculus"
+  #skype                 = ""
+  #snapchat              = ""
+  #pinterest             = "example"
+  #telegram              = "example"
+  #vine                  = ""
+  #googlescholar         = ""
+  #orcid                 = ""
+  #researchgate          = "example"
   # Email
-  email                 = "example"
+  email                 = "bryan.adams@westpoint.edu"

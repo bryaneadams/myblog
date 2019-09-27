@@ -20,5 +20,23 @@
       <description>My most recent paper that I published is titled, &amp;ldquo;Cardiometabolic thresholds for peak 30-min cadence and steps/day.&amp;rdquo; In the article we used multiple methods to establish thresholds for step activity. I was able to work with several outstanding and established faculty at West Point and other universities. The data was collected by NHANES using cluster sampling. This was my first time analyzing data of this nature, but fortunately there are several resources available.</description>
     </item>
     
+    <item>
+      <title>Using RSelenium</title>
+      <link>/post/using-rselenium/</link>
+      <pubDate>Tue, 24 Sep 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/post/using-rselenium/</guid>
+      <description>In class I like to use data that the Cadets can understand without me having to add context. One such data set is IOCT time and APFT scores. We have access to the data, but we have to log into our school account. To do this I have to use RSelenium. This allows me to manually log into my acount and navigate to the applicable pages. From their I am able to use rvest to scrape the remainder of the information.</description>
+    </item>
+    
+    <item>
+      <title>Using RSelenium for Literature Reivew</title>
+      <link>/post/using-rselenium-for-literature-reivew/</link>
+      <pubDate>Thu, 01 Aug 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/post/using-rselenium-for-literature-reivew/</guid>
+      <description>I was approached to see if there was a way to web scrape several articles from PubMed. I normally like to use rvest for web scraping, but it would not work because of the java script used to run PubMed. Luckily, RSelenium provides a way to easily interact with websites of this nature. This was my first use of RSelenium, but now I have a lot more efficient ways of using RSelenium and rvest together, although I am sure there are still better ways out there.</description>
+    </item>
+    
   </channel>
 </rss>
