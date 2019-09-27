@@ -2,11 +2,6 @@
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 	
 	<sitemap>
-	   	<loc>/fr/sitemap.xml</loc>
-		
-	</sitemap>
-	
-	<sitemap>
 	   	<loc>/en/sitemap.xml</loc>
 		
 	   	<lastmod>2019-09-24T00:00:00+00:00</lastmod>
@@ -15,6 +10,11 @@
 	
 	<sitemap>
 	   	<loc>/pl/sitemap.xml</loc>
+		
+	</sitemap>
+	
+	<sitemap>
+	   	<loc>/fr/sitemap.xml</loc>
 		
 	</sitemap>
 	

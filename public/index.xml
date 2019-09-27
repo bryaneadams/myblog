@@ -38,5 +38,15 @@
       <description>I was approached to see if there was a way to web scrape several articles from PubMed. I normally like to use rvest for web scraping, but it would not work because of the java script used to run PubMed. Luckily, RSelenium provides a way to easily interact with websites of this nature. This was my first use of RSelenium, but now I have a lot more efficient ways of using RSelenium and rvest together, although I am sure there are still better ways out there.</description>
     </item>
     
+    <item>
+      <title>Classification Models (KNN)</title>
+      <link>/post/classification-models/</link>
+      <pubDate>Sat, 20 Jul 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/post/classification-models/</guid>
+      <description>I had the opportunity to share different classification models with a unit in the Army. I put these together to help give them what they could do as well as tell them some limitations of the models. I thought they might be useful for my students. This post is over KNN. I will have other post that discuss the other methods.
+K-Nearest NeighborsK-Nearest Neighbors (KNN) classifier will classify an unseen instance by comparing it to a “training” set.</description>
+    </item>
+    
   </channel>
 </rss>

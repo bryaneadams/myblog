@@ -1,0 +1,277 @@
+---
+title: Classification Models (KNN)
+author: ~
+date: '2019-07-20'
+slug: classification-models
+categories: 
+  - modeling
+  - KNN
+tags: []
+description: ''
+featured: ''
+featuredalt: ''
+featuredpath: ''
+linktitle: ''
+---
+
+
+
+<p>I had the opportunity to share different classification models with a unit in the Army. I put these together to help give them what they could do as well as tell them some limitations of the models. I thought they might be useful for my students. This post is over KNN. I will have other post that discuss the other methods.</p>
+<div id="k-nearest-neighbors" class="section level1">
+<h1>K-Nearest Neighbors</h1>
+<p>K-Nearest Neighbors (KNN) classifier will classify an unseen instance by comparing it to a “training” set.</p>
+<p>A “training” set is a portion of data that you set aside to see how well your method of classify works. We will cover more on this later.</p>
+<p>Once you have a new unseen instance, you compare that instance to your training set. You then decide how many neighbors (similar observations) you would like to look at (hence the “k”). The nearest neighbors are often picked by using “euclidean” distance most commonly know as straight-line distance. Here is a basic example of how this method works.</p>
+<p>First I am going to create a simulated data set and plot it.</p>
+<pre class="r"><code>df = data.frame(x = c(2,2.5,1,3,3,4,4.5,4,3.5),
+           y = c(1,4,2,3,4,2,1,5,5), 
+           c = c(&quot;success&quot;,&quot;success&quot;, &quot;success&quot;, &quot;success&quot;,
+                 &quot;failure&quot;, &quot;failure&quot;, &quot;failure&quot;, &quot;failure&quot;,
+                 &quot;success&quot;))</code></pre>
+<pre class="r"><code>df%&gt;%
+  ggplot(aes(x = x, y = y, color = c))+
+  geom_point(size = 5)+
+  labs(color = &quot;&quot;, title = &quot;Example K-Nearest Neighbors&quot;)+
+  theme(text = element_text(size = 20))</code></pre>
+<div class="figure" style="text-align: center"><span id="fig:plot1"></span>
+<img src="/post/2019-09-26-classification-models_files/figure-html/plot1-1.png" alt="Example plot for using the KNN approach" width="672" />
+<p class="caption">
+Figure 1: Example plot for using the KNN approach
+</p>
+</div>
+<p>In Figure <a href="#fig:plot1">1</a> you see a set of points that are of two classifications, “Success” or “Failure”. Now if we had a new unseen observation, i.e. we do not know if it was a success or failure, we would compare it to the “K” nearest neighbors.</p>
+<p>For example, in Figure <a href="#fig:plot2">2</a> we have a new unseen observation.</p>
+<pre class="r"><code>df%&gt;%
+  ggplot(aes(x = x, y = y, color = c))+
+  geom_point(size = 5)+
+  labs(color = &quot;&quot;, title = &quot;Example K-Nearest Neighbors&quot;)+
+  geom_point(aes(x = 2.5, y = 3.5), shape = 7, size = 5)+
+  theme(text = element_text(size = 20))</code></pre>
+<div class="figure" style="text-align: center"><span id="fig:plot2"></span>
+<img src="/post/2019-09-26-classification-models_files/figure-html/plot2-1.png" alt="Example plot of an unseen observation" width="672" />
+<p class="caption">
+Figure 2: Example plot of an unseen observation
+</p>
+</div>
+<p>If we had said we wanted to use “3” as our “k”, 2/3 of its neighbors are “success” and 1/3 of its neighbors are “failures”. We would conclude that this unseen observation is a “success”.</p>
+<p>In Figure <a href="#fig:plot3">3</a> we have another unseen observation, if we were to use “4” as our “k” we would have a 50-50 split. If we use “3” as our “k” we would predict it to be a “failure”. If we use “5” as our “k” we would predict it to b a “success”.</p>
+<pre class="r"><code>df%&gt;%
+  ggplot(aes(x = x, y = y, color = c))+
+  geom_point(size = 5)+
+  labs(color = &quot;&quot;, title = &quot;Example K-Nearest Neighbors&quot;)+
+  geom_point(aes(x = 3.5, y = 4.5), shape = 7, size = 5)+
+  theme(text = element_text(size = 20))</code></pre>
+<div class="figure" style="text-align: center"><span id="fig:plot3"></span>
+<img src="/post/2019-09-26-classification-models_files/figure-html/plot3-1.png" alt="What about K" width="672" />
+<p class="caption">
+Figure 3: What about K
+</p>
+</div>
+<div id="an-example-of-using-knn" class="section level2">
+<h2>An example of using KNN</h2>
+<p>The following data set is know as the Iris Data set. This is a common data set used to introduce machine learning.</p>
+<pre class="r"><code>iris%&gt;%
+  ggplot(aes(x = Petal.Length,Petal.Width,color = Species))+
+  geom_point()</code></pre>
+<div class="figure" style="text-align: center"><span id="fig:irisplot"></span>
+<img src="/post/2019-09-26-classification-models_files/figure-html/irisplot-1.png" alt="The Iris Data set" width="672" />
+<p class="caption">
+Figure 4: The Iris Data set
+</p>
+</div>
+<p>I am going to split my data set into two portions. The first will be my “training” set. This is what I will compare my unseen observations to. My unseen observations will by my “test” set.</p>
+<pre class="r"><code>iris_data = iris%&gt;%
+  mutate(id = row_number())
+
+iris_train = iris_data%&gt;%
+  sample_frac(.8)
+
+iris_test = iris_data%&gt;%
+  anti_join(iris_train, by = &quot;id&quot;)</code></pre>
+<p>Now I will use KNN to decide how I would classify the “test” data set based on a selected “K” nearest neighbors in my “training” data set. Since, I already know the classification so I can see how well I do. To show this basic example I will be using the “caret” package. The “caret” package (short for Classification And Regression Training) contains functions to streamline the model training process for complex regression and classification problems. This is the most trusted package in R for classification problems.</p>
+<pre class="r"><code>test_predictions = knn3Train(train = iris_train[, 3:4], test = iris_test[, 3:4],
+          cl = iris_train$Species, k = 1)</code></pre>
+<p>Next I will make what is known as a confusion matrix to compare my classification to the true classifications.</p>
+<pre class="r"><code>table(iris_test$Species, test_predictions)</code></pre>
+<pre><code>##             test_predictions
+##              setosa versicolor virginica
+##   setosa         10          0         0
+##   versicolor      0          9         1
+##   virginica       0          0        10</code></pre>
+<p>We did well for all the species, but got one wrong.</p>
+<pre class="r"><code>iris_predictions = cbind(iris_test,test_predictions)%&gt;%
+  mutate(correct = ifelse(Species == test_predictions,&quot;yes&quot;,&quot;no&quot;))
+
+iris_train%&gt;%
+  ggplot(aes(x = Petal.Length, y = Petal.Width, shape = Species))+
+  geom_point(size = 3)+
+  geom_point(data = iris_predictions, aes(x = Petal.Length, y = Petal.Width, color = correct, shape = Species), size = 3)</code></pre>
+<div class="figure" style="text-align: center"><span id="fig:compare"></span>
+<img src="/post/2019-09-26-classification-models_files/figure-html/compare-1.png" alt="What was correct?" width="672" />
+<p class="caption">
+Figure 5: What was correct?
+</p>
+</div>
+<p>Since we only used k = 1, we missed out, but now I can move the k up to see if we do better.</p>
+<pre class="r"><code>test_predictions = knn3Train(train = iris_train[, 3:4], test = iris_test[, 3:4],
+          cl = iris_train$Species, k = 2)
+
+table(iris_test$Species,test_predictions)</code></pre>
+<pre><code>##             test_predictions
+##              setosa versicolor virginica
+##   setosa         10          0         0
+##   versicolor      0          9         1
+##   virginica       0          0        10</code></pre>
+<pre class="r"><code>test_predictions = knn3Train(train = iris_train[, 3:4], test = iris_test[, 3:4],
+          cl = iris_train$Species, k = 3)
+
+table(iris_test$Species,test_predictions)</code></pre>
+<pre><code>##             test_predictions
+##              setosa versicolor virginica
+##   setosa         10          0         0
+##   versicolor      0          9         1
+##   virginica       0          0        10</code></pre>
+</div>
+<div id="issues-with-knn" class="section level2">
+<h2>Issues with KNN</h2>
+<div id="picking-the-correct-k" class="section level3">
+<h3>Picking the correct K</h3>
+<p>A big issue with k-Nearest Neighbors is the choice of a suitable k. How many neighbors should you use to decide on the label of a new observation?</p>
+<p>As you begin increase K you will see benefits in classification, but increase K to much you end up over fitting and your error will increase significantly.</p>
+<div class="figure" style="text-align: center"><span id="fig:k1"></span>
+<img src="/post/2019-09-26-classification-models_files/figure-html/k1-1.png" alt="Using k = 1 decision boundaries" width="672" />
+<p class="caption">
+Figure 6: Using k = 1 decision boundaries
+</p>
+</div>
+<div class="figure" style="text-align: center"><span id="fig:k10"></span>
+<img src="/post/2019-09-26-classification-models_files/figure-html/k10-1.png" alt="Using k = 10 decision boundaries" width="672" />
+<p class="caption">
+Figure 7: Using k = 10 decision boundaries
+</p>
+</div>
+</div>
+<div id="picking-the-correct-features" class="section level3">
+<h3>Picking the correct features</h3>
+<div class="figure" style="text-align: center"><span id="fig:k1Sepal"></span>
+<img src="/post/2019-09-26-classification-models_files/figure-html/k1Sepal-1.png" alt="Using k = 1 decision boundaries for Sepal Length and Width" width="672" />
+<p class="caption">
+Figure 8: Using k = 1 decision boundaries for Sepal Length and Width
+</p>
+</div>
+<div class="figure" style="text-align: center"><span id="fig:k10Sepal"></span>
+<img src="/post/2019-09-26-classification-models_files/figure-html/k10Sepal-1.png" alt="Using k = 10 decision boundaries for Sepal Length and Width" width="672" />
+<p class="caption">
+Figure 9: Using k = 10 decision boundaries for Sepal Length and Width
+</p>
+</div>
+</div>
+<div id="scaling" class="section level3">
+<h3>Scaling</h3>
+<p>Scaling your data is an important process when using KNN. For example we could measure people’s height in meters and weight in kilograms. If we looked at the following people using KNN we would say person 1 and 3 are closer than 1 and 2.</p>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th>Height (ft)</th>
+<th>Weight (lbs)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>6.25</td>
+<td>200</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>6.25</td>
+<td>195</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>5</td>
+<td>200</td>
+</tr>
+</tbody>
+</table>
+<p>Person 1 and 2 would have a distance of 5, and Person 1 and 3 would have a distance of 1.25. This is using a rectilinear distance. The model would say 1 and 3 are more alike, but I think most would argue a 5 lbs difference is less of a difference than a 1 ft 3 in difference in height. ### Categorical features</p>
+<p>Another issue is categorical features. For example, if we also knew the person spoke a certain language, such as Spanish, French, or Italian. How could we calculate a straight-line distance. We often assign a dummy variable for each category (1-yes, 0-no). Most packages build this in.</p>
+</div>
+</div>
+<div id="use-the-shortcut-to-take-care-of-these-issues" class="section level2">
+<h2>Use the shortcut to take care of these issues</h2>
+<p>The caret package has the ability to look at several “k” values at one time and pick the best one based on an accuracy measure.</p>
+<pre class="r"><code>model_knn = train(Species ~ Petal.Length+Petal.Width,
+                  data = iris_train,
+                  method = &quot;knn&quot;, 
+                  tuneGrid = expand.grid(k = 1:10),
+                  trControl = trainControl(method = &quot;cv&quot;, number = 10),
+                  preProcess = c(&quot;center&quot;,&quot;scale&quot;))</code></pre>
+<p>Now to see what it actually did:</p>
+<pre class="r"><code>model_knn</code></pre>
+<pre><code>## k-Nearest Neighbors 
+## 
+## 120 samples
+##   2 predictor
+##   3 classes: &#39;setosa&#39;, &#39;versicolor&#39;, &#39;virginica&#39; 
+## 
+## Pre-processing: centered (2), scaled (2) 
+## Resampling: Cross-Validated (10 fold) 
+## Summary of sample sizes: 108, 108, 108, 108, 108, 108, ... 
+## Resampling results across tuning parameters:
+## 
+##   k   Accuracy   Kappa 
+##    1  0.9583333  0.9375
+##    2  0.9333333  0.9000
+##    3  0.9583333  0.9375
+##    4  0.9583333  0.9375
+##    5  0.9583333  0.9375
+##    6  0.9583333  0.9375
+##    7  0.9583333  0.9375
+##    8  0.9583333  0.9375
+##    9  0.9583333  0.9375
+##   10  0.9583333  0.9375
+## 
+## Accuracy was used to select the optimal model using the largest value.
+## The final value used for the model was k = 10.</code></pre>
+<p>See which k it choose, does it make since?</p>
+<pre class="r"><code>model_knn$bestTune</code></pre>
+<pre><code>##     k
+## 10 10</code></pre>
+<p>How good does it do on our unseen observations?</p>
+<pre class="r"><code>predictions = predict(object = model_knn, newdata = iris_test)
+
+confusionMatrix(predictions, iris_test$Species)</code></pre>
+<pre><code>## Confusion Matrix and Statistics
+## 
+##             Reference
+## Prediction   setosa versicolor virginica
+##   setosa         10          0         0
+##   versicolor      0         10         0
+##   virginica       0          0        10
+## 
+## Overall Statistics
+##                                      
+##                Accuracy : 1          
+##                  95% CI : (0.8843, 1)
+##     No Information Rate : 0.3333     
+##     P-Value [Acc &gt; NIR] : 4.857e-15  
+##                                      
+##                   Kappa : 1          
+##                                      
+##  Mcnemar&#39;s Test P-Value : NA         
+## 
+## Statistics by Class:
+## 
+##                      Class: setosa Class: versicolor Class: virginica
+## Sensitivity                 1.0000            1.0000           1.0000
+## Specificity                 1.0000            1.0000           1.0000
+## Pos Pred Value              1.0000            1.0000           1.0000
+## Neg Pred Value              1.0000            1.0000           1.0000
+## Prevalence                  0.3333            0.3333           0.3333
+## Detection Rate              0.3333            0.3333           0.3333
+## Detection Prevalence        0.3333            0.3333           0.3333
+## Balanced Accuracy           1.0000            1.0000           1.0000</code></pre>
+</div>
+</div>
