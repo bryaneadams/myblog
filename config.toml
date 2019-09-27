@@ -1,4 +1,4 @@
-baseurl                 = "https://example.com/"
+baseurl                 = "https://bryanadams.netlify.com/"
 DefaultContentLanguage  = "en"
 title                   = "Bryan Adams Data Analysis"
 theme = "hugo-future-imperfect-slim"
