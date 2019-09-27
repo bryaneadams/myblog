@@ -1,0 +1,162 @@
+---
+title: Classification Models (LDA)
+author: ~
+date: '2019-07-21'
+slug: classification-models-lda
+categories: 
+  - modeling
+  - LDA
+tags: []
+description: ''
+featured: ''
+featuredalt: ''
+featuredpath: ''
+linktitle: ''
+---
+
+
+
+<p>Linear Discriminate Analysis (LDA) is a great classification method. It is simple and interpretable and can perform as well, if not better, than a lot of other fancier models (neural networks that are not interpretable).</p>
+<div id="introduction-to-linear-discriminant-analysis-lda" class="section level1">
+<h1>Introduction to Linear Discriminant Analysis (LDA)</h1>
+<p>I will be using the Iris Data set again. First I will split it into a “training” set and a “test” set. The test set will represent the unseen observations.</p>
+<pre class="r"><code>iris_data = iris%&gt;%
+  mutate(id = row_number())
+
+iris_train = iris_data%&gt;%
+  sample_frac(.8)
+
+iris_test = iris_data%&gt;%
+  anti_join(iris_train, by = &quot;id&quot;)</code></pre>
+<p>Now I will create an LDA model to classify the species based on the Petal Length and Petal Width.</p>
+<pre class="r"><code>iris_lda = lda(Species ~ Petal.Length + Petal.Width, data = iris_train)
+
+iris_lda</code></pre>
+<pre><code>## Call:
+## lda(Species ~ Petal.Length + Petal.Width, data = iris_train)
+## 
+## Prior probabilities of groups:
+##     setosa versicolor  virginica 
+##  0.3083333  0.3583333  0.3333333 
+## 
+## Group means:
+##            Petal.Length Petal.Width
+## setosa         1.470270   0.2513514
+## versicolor     4.225581   1.3093023
+## virginica      5.482500   2.0350000
+## 
+## Coefficients of linear discriminants:
+##                   LD1       LD2
+## Petal.Length 1.461922 -2.312619
+## Petal.Width  2.559263  5.289222
+## 
+## Proportion of trace:
+##    LD1    LD2 
+## 0.9904 0.0096</code></pre>
+<pre class="r"><code>iris_lda_prediction = predict(iris_lda,iris_test)
+
+table(iris_test$Species,iris_lda_prediction$class)</code></pre>
+<pre><code>##             
+##              setosa versicolor virginica
+##   setosa         13          0         0
+##   versicolor      0          6         1
+##   virginica       0          1         9</code></pre>
+<p>When you look at the approximate decision boundaries, you can see the difference between KNN and LDA. LDA decision boundaries will be linear. Figure <a href="#fig:petalbound">1</a> shows the decision boundaries.</p>
+<div class="figure" style="text-align: Center"><span id="fig:petalbound"></span>
+<img src="/post/2019-09-26-classification-models-lda_files/figure-html/petalbound-1.png" alt="Approximate Decision Boundaries for LDA using Petal Length and Petal Width" width="672" />
+<p class="caption">
+Figure 1: Approximate Decision Boundaries for LDA using Petal Length and Petal Width
+</p>
+</div>
+<div id="selecting-the-proper-features" class="section level2">
+<h2>Selecting the proper features</h2>
+<pre class="r"><code>iris_lda_sepal = lda(Species ~ Sepal.Length + Sepal.Width,
+                     data = iris_train)
+
+iris_lda_sepal</code></pre>
+<pre><code>## Call:
+## lda(Species ~ Sepal.Length + Sepal.Width, data = iris_train)
+## 
+## Prior probabilities of groups:
+##     setosa versicolor  virginica 
+##  0.3083333  0.3583333  0.3333333 
+## 
+## Group means:
+##            Sepal.Length Sepal.Width
+## setosa         5.024324    3.445946
+## versicolor     5.909302    2.758140
+## virginica      6.532500    2.980000
+## 
+## Coefficients of linear discriminants:
+##                    LD1        LD2
+## Sepal.Length -2.088405 -0.9644933
+## Sepal.Width   3.191567 -2.1751277
+## 
+## Proportion of trace:
+##    LD1    LD2 
+## 0.9517 0.0483</code></pre>
+<pre class="r"><code>iris_lda_sepal_prediction = predict(iris_lda_sepal,iris_test)
+
+table(iris_test$Species,iris_lda_sepal_prediction$class)</code></pre>
+<pre><code>##             
+##              setosa versicolor virginica
+##   setosa         12          1         0
+##   versicolor      0          5         2
+##   virginica       0          2         8</code></pre>
+<p>Recall when using KNN the decision boundaries were not at all linear, now with LDA we have linear boundaries. Figure <a href="#fig:sepalbound">2</a> shows the approximate decision boundaries if we were to use sepal length and sepal width.</p>
+<div class="figure" style="text-align: Center"><span id="fig:sepalbound"></span>
+<img src="/post/2019-09-26-classification-models-lda_files/figure-html/sepalbound-1.png" alt="Approximate Decision Boundaries for LDA using Sepal Length and Sepal Width" width="672" />
+<p class="caption">
+Figure 2: Approximate Decision Boundaries for LDA using Sepal Length and Sepal Width
+</p>
+</div>
+</div>
+<div id="using-caret-for-lda" class="section level2">
+<h2>Using caret for LDA</h2>
+<pre class="r"><code>fitControl = trainControl(
+  method = &quot;cv&quot;,
+  number = 10)
+
+lda_fit = train(Species~Petal.Length+Petal.Width,
+                data = iris_train,
+                method = &quot;lda&quot;,
+                trControl = fitControl)
+
+lda_fit</code></pre>
+<pre><code>## Linear Discriminant Analysis 
+## 
+## 120 samples
+##   2 predictor
+##   3 classes: &#39;setosa&#39;, &#39;versicolor&#39;, &#39;virginica&#39; 
+## 
+## No pre-processing
+## Resampling: Cross-Validated (10 fold) 
+## Summary of sample sizes: 108, 109, 107, 108, 109, 108, ... 
+## Resampling results:
+## 
+##   Accuracy   Kappa 
+##   0.9651515  0.9475</code></pre>
+<pre class="r"><code>lda_fit$finalModel</code></pre>
+<pre><code>## Call:
+## lda(x, grouping = y)
+## 
+## Prior probabilities of groups:
+##     setosa versicolor  virginica 
+##  0.3083333  0.3583333  0.3333333 
+## 
+## Group means:
+##            Petal.Length Petal.Width
+## setosa         1.470270   0.2513514
+## versicolor     4.225581   1.3093023
+## virginica      5.482500   2.0350000
+## 
+## Coefficients of linear discriminants:
+##                   LD1       LD2
+## Petal.Length 1.461922 -2.312619
+## Petal.Width  2.559263  5.289222
+## 
+## Proportion of trace:
+##    LD1    LD2 
+## 0.9904 0.0096</code></pre>
+</div>
+</div>

@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>modeling on Bryan Adams Data Analysis</title>
-    <link>/categories/modeling/</link>
-    <description>Recent content in modeling on Bryan Adams Data Analysis</description>
+    <title>LDA on Bryan Adams Data Analysis</title>
+    <link>/categories/lda/</link>
+    <description>Recent content in LDA on Bryan Adams Data Analysis</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <lastBuildDate>Sun, 21 Jul 2019 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="/categories/modeling/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="/categories/lda/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
@@ -19,16 +19,6 @@
       <guid>/post/classification-models-lda/</guid>
       <description>Linear Discriminate Analysis (LDA) is a great classification method. It is simple and interpretable and can perform as well, if not better, than a lot of other fancier models (neural networks that are not interpretable).
 Introduction to Linear Discriminant Analysis (LDA)I will be using the Iris Data set again. First I will split it into a “training” set and a “test” set. The test set will represent the unseen observations.</description>
-    </item>
-    
-    <item>
-      <title>Classification Models (KNN)</title>
-      <link>/post/classification-models/</link>
-      <pubDate>Sat, 20 Jul 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/post/classification-models/</guid>
-      <description>I had the opportunity to share different classification models with a unit in the Army. I put these together to help give them what they could do as well as tell them some limitations of the models. I thought they might be useful for my students. This post is over KNN. I will have other post that discuss the other methods.
-K-Nearest NeighborsK-Nearest Neighbors (KNN) classifier will classify an unseen instance by comparing it to a “training” set.</description>
     </item>
     
   </channel>

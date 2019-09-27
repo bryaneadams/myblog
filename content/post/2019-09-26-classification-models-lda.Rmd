@@ -1,0 +1,151 @@
+---
+title: Classification Models (LDA)
+author: ~
+date: '2019-07-21'
+slug: classification-models-lda
+categories: 
+  - modeling
+  - LDA
+tags: []
+description: ''
+featured: ''
+featuredalt: ''
+featuredpath: ''
+linktitle: ''
+---
+Linear Discriminate Analysis (LDA) is a great classification method.  It is simple and interpretable and can perform as well, if not better, than a lot of other fancier models (neural networks that are not interpretable).
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(MASS)
+library(caret)
+library(GGally)
+```
+
+# Introduction to Linear Discriminant Analysis (LDA)
+
+I will be using the Iris Data set again.  First I will split it into a "training" set and a "test" set.  The test set will represent the unseen observations.
+
+```{r}
+iris_data = iris%>%
+  mutate(id = row_number())
+
+iris_train = iris_data%>%
+  sample_frac(.8)
+
+iris_test = iris_data%>%
+  anti_join(iris_train, by = "id")
+```
+
+Now I will create an LDA model to classify the species based on the Petal Length and Petal Width.
+
+```{r}
+iris_lda = lda(Species ~ Petal.Length + Petal.Width, data = iris_train)
+
+iris_lda
+
+```
+
+```{r}
+iris_lda_prediction = predict(iris_lda,iris_test)
+
+table(iris_test$Species,iris_lda_prediction$class)
+```
+
+When you look at the approximate decision boundaries, you can see the difference between KNN and LDA.  LDA decision boundaries will be linear.  Figure \@ref(fig:petalbound) shows the decision boundaries.
+
+```{r petalbound, echo=FALSE, fig.cap="Approximate Decision Boundaries for LDA using Petal Length and Petal Width", fig.align="Center"}
+iris_lda = lda(Species ~ Petal.Length + Petal.Width, data = iris_train)
+
+
+pl = seq(min(iris_train$Petal.Length), max(iris_train$Petal.Length), by=0.1)
+pw = seq(min(iris_train$Petal.Width), max(iris_train$Petal.Width), by=0.1)
+
+# generates the boundaries for your graph
+lgrid <- expand.grid(Petal.Length=pl, 
+                     Petal.Width=pw,
+                     Sepal.Length = 5.4,
+                     Sepal.Width=3.1)
+
+LDAPredGrids <- predict(iris_lda, newdata=lgrid)
+LDAPredGrid = as.numeric(LDAPredGrids$class)
+
+iris_train%>%
+  ggplot() + 
+   geom_point(aes(x=Petal.Length,y=Petal.Width, 
+                  color = Species),size=5, shape=1)+
+  stat_contour(data = lgrid, aes(x=Petal.Length, y=Petal.Width,
+                                 z=LDAPredGrid),bins=2) +
+  geom_point(data = lgrid, aes(x=Petal.Length, y=Petal.Width,
+                               color=LDAPredGrids$class)) +
+  theme_bw()+
+  labs(x = "Petal Length", y = "Petal Width")+
+  theme(text = element_text(size = 20))
+
+```
+
+## Selecting the proper features
+
+```{r}
+iris_lda_sepal = lda(Species ~ Sepal.Length + Sepal.Width,
+                     data = iris_train)
+
+iris_lda_sepal
+```
+
+```{r}
+iris_lda_sepal_prediction = predict(iris_lda_sepal,iris_test)
+
+table(iris_test$Species,iris_lda_sepal_prediction$class)
+```
+
+Recall when using KNN the decision boundaries were not at all linear, now with LDA we have linear boundaries.  Figure \@ref(fig:sepalbound) shows the approximate decision boundaries if we were to use sepal length and sepal width.
+
+```{r sepalbound, echo=FALSE, fig.cap="Approximate Decision Boundaries for LDA using Sepal Length and Sepal Width", fig.align="Center"}
+sl = seq(min(iris_train$Sepal.Length), max(iris_train$Sepal.Length), by=0.1)
+sw = seq(min(iris_train$Sepal.Width), max(iris_train$Sepal.Width), by=0.1)
+
+# generates the boundaries for your graph
+lgrid <- expand.grid(Sepal.Length=sl, 
+                     Sepal.Width=sw)
+
+LDAPredGrids <- predict(iris_lda_sepal, newdata=lgrid)
+LDAPredGrid = as.numeric(LDAPredGrids$class)
+
+iris_train%>%
+  ggplot() + 
+   geom_point(aes(x=Sepal.Length,y=Sepal.Width, 
+                  color = Species),size=5, 
+              shape=1)+
+  stat_contour(data = lgrid, aes(x=Sepal.Length, y=Sepal.Width,
+                                 z=LDAPredGrid),bins=2) +
+  geom_point(data = lgrid, aes(x=Sepal.Length, y=Sepal.Width,
+                               color=LDAPredGrids$class)) +
+  theme_bw()+
+  labs(x = "Sepal Length", y = "Sepal Width")+
+  theme(text = element_text(size = 20))
+
+```
+
+
+## Using caret for LDA
+
+```{r}
+fitControl = trainControl(
+  method = "cv",
+  number = 10)
+
+lda_fit = train(Species~Petal.Length+Petal.Width,
+                data = iris_train,
+                method = "lda",
+                trControl = fitControl)
+
+lda_fit
+```
+
+```{r}
+lda_fit$finalModel
+```
+
