@@ -4,7 +4,7 @@ title: Curriculum Vitae
 ---
 
 
-Updated: 17 September 2019
+Updated: 26 September 2019
 
 ## Education
 
