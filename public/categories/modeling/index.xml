@@ -6,10 +6,21 @@
     <description>Recent content in modeling on Bryan Adams Data Analysis</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Sun, 21 Jul 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 22 Jul 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/categories/modeling/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Classification Models (Logistic Regression)</title>
+      <link>/post/classification-models-logistic-regression/</link>
+      <pubDate>Mon, 22 Jul 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/post/classification-models-logistic-regression/</guid>
+      <description>Logistic regression is the last method I shared with the Army unit. I believe logistic regression is an excellent classification model. You are limited to two outcomes, but it is interpretable.
+Logistic RegressionThis example uses the titanic survival data to walk through a logistic regression example. The question is, what increases your probability of survival.
+titanic = titanic::titanic_trainExploring the DataFigures 1, 2, and 3 graphically depict the relationship between possible explanatory variables and the response variable (surviving).</description>
+    </item>
     
     <item>
       <title>Classification Models (LDA)</title>

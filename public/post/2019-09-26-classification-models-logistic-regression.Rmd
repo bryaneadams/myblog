@@ -1,0 +1,242 @@
+---
+title: Classification Models (Logistic Regression)
+author: ~
+date: '2019-07-22'
+slug: classification-models-logistic-regression
+categories:
+  - modeling
+  - logistic regression
+tags: []
+description: ''
+featured: ''
+featuredalt: ''
+featuredpath: ''
+linktitle: ''
+---
+Logistic regression is the last method I shared with the Army unit.  I believe logistic regression is an excellent classification model.  You are limited to two outcomes, but it is interpretable.
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(caret)
+library(caTools)
+```
+
+# Logistic Regression
+
+This example uses the titanic survival data to walk through a logistic regression example.  The question is, what increases your probability of survival.
+
+```{r}
+titanic = titanic::titanic_train
+```
+
+## Exploring the Data
+
+Figures  \@ref(fig:age), \@ref(fig:pclass), and \@ref(fig:gender) graphically depict the relationship between possible explanatory variables and the response variable (surviving).  We are looking for a easily identifiable split between surviving and not surviving.  Normally you will not be lucky enough to have a clean split, but some are more separated than others. 
+
+```{r age, fig.cap="Age versus Surviving", fig.align="center"}
+titanic%>%
+  ggplot(aes(x = Age, y = Survived))+
+  geom_jitter(height = .1, width = .1)+
+  scale_y_continuous(limits = c(-0.1,1.1), breaks = c(0,1))+
+  labs(x = "Age (years)", y = "Survived (1 = yes, 0 = no)")
+```
+
+```{r pclass, fig.cap="Passenger Class versus Surviving", fig.align="center"}
+titanic%>%
+  ggplot(aes(x = Pclass, y = Survived))+
+  geom_jitter(height = 0.1, width = 0.1)+
+  scale_y_continuous(limits = c(-0.1,1.1), breaks = c(0,1))+
+  labs(x = "Passenger Class", y = "Survived (1 = yes, 0 = no)")
+```
+
+```{r gender, fig.cap="Gender versus Surviving", fig.align="center"}
+titanic%>%
+  ggplot(aes(x = Sex, y = Survived))+
+  geom_jitter(height = 0.1, width = 0.1)+
+  scale_y_continuous(limits = c(-0.1,1.1), breaks = c(0,1))+
+  labs(x = "Passenger Class", y = "Survived (1 = yes, 0 = no)")
+```
+
+## Making a logistic model using gender as the explanatory varaible
+
+A logistic model returns a probability of having a success (surviving).  The coefficients in the model of very little meaning.  We are often concerned with an **odds ratio**.  An **odds ratio** has a real interpretation.  Example a team is 2 times more likely to win.  We will use gender to explain how to interpret the logistic regression model.  
+
+```{r}
+gender_model = glm(Survived ~ Sex, data = titanic, family = binomial)
+
+summary(gender_model)
+```
+
+If I were to write out the model mathematically it would look like this.
+
+$$p(x) = 1.0566 - 2.5137*Sex$$
+$$\text{sex}=1\text{ if male}, 0\text{ if female}$$
+$$p(x) = \text{ The probability of surviving}$$
+
+The value -2.5137 is the **log-odds** which has no common meaning.  If we manipulate it by $e^{\beta_1}$ we get the **odds ratio** which has a commonly understood meaning.  In this case we get the following **odds ratio**
+
+```{r}
+exp(gender_model$coefficients[2])
+```
+
+The **odds ratio** is 0.081.  Because the explanatory variable is categorical, if you are male you are 0.081 times more likely to survive than a female.  This is still a little weird to explain, but it does mean you are much more likely to die if you are male.  We can switch the survival coding to make it a little more interpretable.
+
+```{r}
+gender_model_flip = glm(Survived ~ Sex, data = titanic%>%
+                          mutate(Survived = ifelse(Survived==1,0,1)), family = binomial)
+
+summary(gender_model_flip)
+```
+
+```{r}
+exp(gender_model_flip$coefficients[2])
+```
+
+In this case, we would say that you are 12.35 times more likely to die if you are male than female.
+
+## How well does our model do?
+
+```{r}
+titanic_pred = titanic%>%
+  mutate(prediction_probs = predict(gender_model, titanic, type = "response"))%>%
+  mutate(pred_survival = ifelse(prediction_probs>=.5,1,0))
+
+table(titanic_pred$Survived, titanic_pred$pred_survival)
+```
+
+With this simple model we correctly identified 78.7% of the outcomes, but is this good.  A naive approach would be that I state everyone survived.  In this data set that would result in being correct 61.6% of the time.
+
+## Good I do better with more predictors?
+
+```{r}
+fitControl = trainControl(
+  method = "cv",
+  number = 10,
+  savePredictions = TRUE)
+
+titanic_model = train(as.factor(Survived) ~ Sex,
+                      data = titanic,
+                      method = "glm",
+                      family = binomial(),
+                      trControl = fitControl,
+                      na.action = na.pass)
+```
+
+```{r}
+titanic_model
+
+summary(titanic_model)
+```
+
+```{r}
+titanic_model = train(as.factor(Survived) ~ Sex + Age,
+                      data = titanic,
+                      method = "glm",
+                      family = binomial(),
+                      trControl = fitControl,
+                      na.action = na.pass)
+```
+
+```{r}
+titanic_model
+
+summary(titanic_model)
+```
+
+```{r}
+titanic_model = train(as.factor(Survived) ~ Sex + Age + Pclass,
+                      data = titanic,
+                      method = "glm",
+                      family = binomial(),
+                      trControl = fitControl,
+                      na.action = na.pass)
+```
+
+```{r}
+titanic_model
+
+summary(titanic_model)
+```
+
+I can now compare the accuracy measures for each of the models and decide on the optimal model.
+
+```{r}
+confusionMatrix(titanic_model)
+```
+
+## Is your model just guessing
+
+ROC can be seen as a grade.  A 1 is an A+, a .5 is an F, or really your model is just guessing.
+
+Here are two ways to look at it, one visual and one with the numeric calculation.
+
+```{r}
+titanic_predictions = predict(gender_model, titanic,
+                              type = "response")
+
+colAUC(titanic_predictions,titanic$Survived, plotROC = T)
+```
+
+
+```{r}
+fitControl = trainControl(
+  method = "cv",
+  number = 10,
+  summaryFunction = twoClassSummary,
+  classProbs = TRUE, # IMPORTANT!
+  verboseIter = TRUE)
+
+titanic_model = train(make.names(Survived) ~ Sex,
+                      data = titanic,
+                      method = "glm",
+                      trControl = fitControl,
+                      na.action = na.pass)
+
+titanic_model
+
+```
+
+Age is more continuous which will give a better visualization of the ROC curve
+
+```{r}
+age_model = glm(Survived ~ Age, data = titanic, family = binomial)
+
+summary(age_model)
+
+titanic_predictions = predict(age_model, titanic,
+                              type = "response")
+
+colAUC(titanic_predictions,titanic$Survived, plotROC = T)
+
+
+```
+
+
+```{r eval=FALSE, include=FALSE}
+apollo = read_csv("SpaceShuttle.csv")
+
+apollo = apollo%>%
+  select(Temperature, Fail)%>%
+  mutate(Fail = ifelse(Fail == "yes", 0, 1))
+
+apollo_model = glm(Fail ~ Temperature, data = apollo, family = binomial)
+
+summary(apollo_model)
+
+exp(10*apollo_model$coefficients[2])
+
+apollo%>%
+  ggplot(aes(x = Temperature, y = Fail))+
+  geom_point()+
+  geom_smooth(method = "glm",
+              method.args = list(family = "binomial"), 
+              se = FALSE)+
+  geom_smooth(method = "lm", se = F, color = "red")+
+  theme(text = element_text(size = 20))+
+  labs(x = "Temperature in degrees F", y = "Successful Launch")+
+  scale_y_continuous(breaks = c(0,1), limits = c(0,1.2))+
+  scale_x_continuous(limits = c(50,85), breaks = c(seq(50,85,5)))
+
+```

@@ -1,0 +1,937 @@
+<!doctype html>
+<html lang="en">
+  <head>
+  <meta charset="utf-8">
+<title>Classification Models (Logistic Regression) - Bryan Adams Data Analysis</title>
+<meta name="description" content="A theme by HTML5 UP, ported by Julio Pescador. Slimmed and enhanced by Patrick Collins. Multilingual by StatnMap. Powered by Hugo.">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+
+  <meta name="generator" content="Hugo 0.55.6" />
+  
+<meta itemprop="name" content="Classification Models (Logistic Regression)">
+<meta itemprop="description" content="Logistic regression is the last method I shared with the Army unit. I believe logistic regression is an excellent classification model. You are limited to two outcomes, but it is interpretable.
+Logistic RegressionThis example uses the titanic survival data to walk through a logistic regression example. The question is, what increases your probability of survival.
+titanic = titanic::titanic_trainExploring the DataFigures 1, 2, and 3 graphically depict the relationship between possible explanatory variables and the response variable (surviving).">
+
+
+<meta itemprop="datePublished" content="2019-07-22T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2019-07-22T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="1887">
+
+
+
+<meta itemprop="keywords" content="" />
+
+  <meta property="og:title" content="Classification Models (Logistic Regression)" />
+<meta property="og:description" content="Logistic regression is the last method I shared with the Army unit. I believe logistic regression is an excellent classification model. You are limited to two outcomes, but it is interpretable.
+Logistic RegressionThis example uses the titanic survival data to walk through a logistic regression example. The question is, what increases your probability of survival.
+titanic = titanic::titanic_trainExploring the DataFigures 1, 2, and 3 graphically depict the relationship between possible explanatory variables and the response variable (surviving)." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="/post/classification-models-logistic-regression/" />
+<meta property="article:published_time" content="2019-07-22T00:00:00&#43;00:00"/>
+<meta property="article:modified_time" content="2019-07-22T00:00:00&#43;00:00"/>
+
+  <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Classification Models (Logistic Regression)"/>
+<meta name="twitter:description" content="Logistic regression is the last method I shared with the Army unit. I believe logistic regression is an excellent classification model. You are limited to two outcomes, but it is interpretable.
+Logistic RegressionThis example uses the titanic survival data to walk through a logistic regression example. The question is, what increases your probability of survival.
+titanic = titanic::titanic_trainExploring the DataFigures 1, 2, and 3 graphically depict the relationship between possible explanatory variables and the response variable (surviving)."/>
+<meta name="twitter:site" content="@@statculus"/>
+
+  
+
+  <link rel="stylesheet"
+      href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/github.min.css">
+  
+    
+      <link rel="stylesheet" href="/css/normalize.css">
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway:400,800,900|Source+Sans+Pro:400,700">
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.1.0/css/flag-icon.min.css">
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.8.6/css/academicons.min.css">
+      <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.10/css/all.css" integrity="sha384-+d0P83n9kaQMCwj8F4RJB66tzIwOKmrdb46+porD/OvrJ+37WqIM7UoBtwHO6Nlg" crossorigin="anonymous">
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.3.5/jquery.fancybox.min.css" />
+      <link rel="stylesheet" href="/css/main.min.css">
+      <link rel="stylesheet" href="/css/add-on.css">
+    
+  
+  
+</head>
+
+  <body>
+    
+<header id="site-header">
+  <nav id="site-nav">
+    <h1 class="nav-title">
+      <a href="/">
+        
+          
+            post
+          
+        
+      </a>
+    </h1>
+    <menu id="site-nav-menu" class="flyout-menu">
+      
+        <a href="/" class="link"><i class="fas fa-home">&nbsp;</i>Home</a>
+      
+        <a href="/about/" class="link"><i class="far fa-id-card">&nbsp;</i>Curriculum vitae</a>
+      
+        <a href="/categories/" class="link"><i class="fas fa-sitemap">&nbsp;</i>Categories</a>
+      
+        <a href="/contact/" class="link"><i class="far fa-envelope">&nbsp;</i>Contact</a>
+      
+      <a href="#share-menu" class="share-toggle"><i class="fas fa-share-alt">&nbsp;</i>Share</a>
+      
+
+    </menu>
+    
+
+    <a href="#share-menu" class="share-toggle"><i class="fas fa-share-alt fa-2x">&nbsp;</i></a>
+    <a href="#lang-menu" class="lang-toggle" lang="en"><span class="flag-icon flag-icon-en" alt="en"></span></a>
+    <a href="#site-nav" class="nav-toggle"><i class="fas fa-bars fa-2x"></i></a>
+  </nav>
+  <menu id="lang-menu" class="flyout-menu">
+  <a href="#" lang="en" class="active"><span class="flag-icon flag-icon-en" alt="en"></span></a>
+  
+    
+      
+        <a href="/fr" lang="fr" class="no-lang"><span class="flag-icon flag-icon-fr" alt="fr"></span></a>
+      
+    
+      
+    
+      
+        <a href="/pl" lang="pl" class="no-lang"><span class="flag-icon flag-icon-pl" alt="pl"></span></a>
+      
+    
+  
+</menu>
+
+  
+    <menu id="share-menu" class="flyout-menu">
+      <h1>Share Post</h1>
+      
+
+
+
+  
+    <a href="//twitter.com/share?url=&amp;text=&amp" target="_blank" rel="noopener" class="share-btn twitter">
+        <i class="fab fa-twitter"></i><p>&nbsp;Twitter</p>
+      </a>
+  
+
+  
+      <a href="//www.facebook.com/sharer/sharer.php?u=" target="_blank" rel="noopener" class="share-btn facebook">
+        <i class="fab fa-facebook"></i><p>&nbsp;Facebook</p>
+        </a>
+  
+
+  
+    <a href="//reddit.com/submit?url=&amp;title=" target="_blank" rel="noopener" class="share-btn reddit">
+          <i class="fab fa-reddit-alien"></i><p>&nbsp;Reddit</p>
+        </a>
+  
+
+  
+        <a href="//www.linkedin.com/shareArticle?url=&amp;title=" target="_blank" rel="noopener" class="share-btn linkedin">
+            <i class="fab fa-linkedin"></i><p>&nbsp;LinkedIn</p>
+          </a>
+  
+
+  
+        <a href="//www.stumbleupon.com/submit?url=&amp;title=" target="_blank" rel="noopener" class="share-btn stumbleupon">
+          <i class="fab fa-stumbleupon"></i><p>&nbsp;StumbleUpon</p>
+        </a>
+  
+
+  
+        <a href="//www.pinterest.com/pin/create/button/?url=&amp;description=" target="_blank" rel="noopener" class="share-btn pinterest">
+          <i class="fab fa-pinterest-p"></i><p>&nbsp;Pinterest</p>
+        </a>
+  
+
+  
+        <a href="mailto:?subject=Check out this post by &amp;body=" target="_blank" class="share-btn email">
+          <i class="fas fa-envelope"></i><p>&nbsp;Email</p>
+        </a>
+  
+
+
+    </menu>
+  
+</header>
+
+    <div id="wrapper">
+      <section id="site-intro">
+  <a href="/"><img src="/img/main/logo.jpg" class="circle" width="" alt="Hugo Future Imperfect Slim" /></a>
+  <header>
+    <h1>Bryan Adams' Blog</h1>
+  </header>
+  <main>
+    <p>Beat Navy</p>
+  </main>
+  
+    <footer>
+      <ul class="social-icons">
+        
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li><a href="//twitter.com/@statculus" target="_blank" rel="noopener" title="Twitter" class="fab fa-twitter"></a></li>
+
+
+
+
+
+
+
+
+<li><a href="mailto:bryan.adams@westpoint.edu" target="_blank" title="Email" class="far fa-envelope"></a></li>
+
+      </ul>
+    </footer>
+  
+</section>
+
+      <main id="site-main">
+        <article class="post">
+  <header>
+  <div class="title">
+    
+        <h2><a href="/post/classification-models-logistic-regression/">Classification Models (Logistic Regression)</a></h2>
+    
+    
+</div>
+  <div class="meta">
+    <time class="published" datetime="2019-07-22 00:00:00 &#43;0000 UTC">
+      July 22, 2019
+    </time>
+    <span class="author"></span>
+    
+        <p>9 minute read</p>
+    
+  </div>
+</header>
+
+  <section id="social-share">
+    
+
+
+
+  
+    <a href="//twitter.com/share?url=&amp;text=&amp" target="_blank" rel="noopener" class="share-btn twitter">
+        <i class="fab fa-twitter"></i><p>&nbsp;Twitter</p>
+      </a>
+  
+
+  
+      <a href="//www.facebook.com/sharer/sharer.php?u=" target="_blank" rel="noopener" class="share-btn facebook">
+        <i class="fab fa-facebook"></i><p>&nbsp;Facebook</p>
+        </a>
+  
+
+  
+    <a href="//reddit.com/submit?url=&amp;title=" target="_blank" rel="noopener" class="share-btn reddit">
+          <i class="fab fa-reddit-alien"></i><p>&nbsp;Reddit</p>
+        </a>
+  
+
+  
+        <a href="//www.linkedin.com/shareArticle?url=&amp;title=" target="_blank" rel="noopener" class="share-btn linkedin">
+            <i class="fab fa-linkedin"></i><p>&nbsp;LinkedIn</p>
+          </a>
+  
+
+  
+        <a href="//www.stumbleupon.com/submit?url=&amp;title=" target="_blank" rel="noopener" class="share-btn stumbleupon">
+          <i class="fab fa-stumbleupon"></i><p>&nbsp;StumbleUpon</p>
+        </a>
+  
+
+  
+        <a href="//www.pinterest.com/pin/create/button/?url=&amp;description=" target="_blank" rel="noopener" class="share-btn pinterest">
+          <i class="fab fa-pinterest-p"></i><p>&nbsp;Pinterest</p>
+        </a>
+  
+
+  
+        <a href="mailto:?subject=Check out this post by &amp;body=" target="_blank" class="share-btn email">
+          <i class="fas fa-envelope"></i><p>&nbsp;Email</p>
+        </a>
+  
+
+
+  </section>
+  
+
+  <div class="content">
+    
+
+
+<p>Logistic regression is the last method I shared with the Army unit. I believe logistic regression is an excellent classification model. You are limited to two outcomes, but it is interpretable.</p>
+<div id="logistic-regression" class="section level1">
+<h1>Logistic Regression</h1>
+<p>This example uses the titanic survival data to walk through a logistic regression example. The question is, what increases your probability of survival.</p>
+<pre class="r"><code>titanic = titanic::titanic_train</code></pre>
+<div id="exploring-the-data" class="section level2">
+<h2>Exploring the Data</h2>
+<p>Figures <a href="#fig:age">1</a>, <a href="#fig:pclass">2</a>, and <a href="#fig:gender">3</a> graphically depict the relationship between possible explanatory variables and the response variable (surviving). We are looking for a easily identifiable split between surviving and not surviving. Normally you will not be lucky enough to have a clean split, but some are more separated than others.</p>
+<pre class="r"><code>titanic%&gt;%
+  ggplot(aes(x = Age, y = Survived))+
+  geom_jitter(height = .1, width = .1)+
+  scale_y_continuous(limits = c(-0.1,1.1), breaks = c(0,1))+
+  labs(x = &quot;Age (years)&quot;, y = &quot;Survived (1 = yes, 0 = no)&quot;)</code></pre>
+<pre><code>## Warning: Removed 177 rows containing missing values (geom_point).</code></pre>
+<div class="figure" style="text-align: center"><span id="fig:age"></span>
+<img src="/post/2019-09-26-classification-models-logistic-regression_files/figure-html/age-1.png" alt="Age versus Surviving" width="672" />
+<p class="caption">
+Figure 1: Age versus Surviving
+</p>
+</div>
+<pre class="r"><code>titanic%&gt;%
+  ggplot(aes(x = Pclass, y = Survived))+
+  geom_jitter(height = 0.1, width = 0.1)+
+  scale_y_continuous(limits = c(-0.1,1.1), breaks = c(0,1))+
+  labs(x = &quot;Passenger Class&quot;, y = &quot;Survived (1 = yes, 0 = no)&quot;)</code></pre>
+<div class="figure" style="text-align: center"><span id="fig:pclass"></span>
+<img src="/post/2019-09-26-classification-models-logistic-regression_files/figure-html/pclass-1.png" alt="Passenger Class versus Surviving" width="672" />
+<p class="caption">
+Figure 2: Passenger Class versus Surviving
+</p>
+</div>
+<pre class="r"><code>titanic%&gt;%
+  ggplot(aes(x = Sex, y = Survived))+
+  geom_jitter(height = 0.1, width = 0.1)+
+  scale_y_continuous(limits = c(-0.1,1.1), breaks = c(0,1))+
+  labs(x = &quot;Passenger Class&quot;, y = &quot;Survived (1 = yes, 0 = no)&quot;)</code></pre>
+<div class="figure" style="text-align: center"><span id="fig:gender"></span>
+<img src="/post/2019-09-26-classification-models-logistic-regression_files/figure-html/gender-1.png" alt="Gender versus Surviving" width="672" />
+<p class="caption">
+Figure 3: Gender versus Surviving
+</p>
+</div>
+</div>
+<div id="making-a-logistic-model-using-gender-as-the-explanatory-varaible" class="section level2">
+<h2>Making a logistic model using gender as the explanatory varaible</h2>
+<p>A logistic model returns a probability of having a success (surviving). The coefficients in the model of very little meaning. We are often concerned with an <strong>odds ratio</strong>. An <strong>odds ratio</strong> has a real interpretation. Example a team is 2 times more likely to win. We will use gender to explain how to interpret the logistic regression model.</p>
+<pre class="r"><code>gender_model = glm(Survived ~ Sex, data = titanic, family = binomial)
+
+summary(gender_model)</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = Survived ~ Sex, family = binomial, data = titanic)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -1.6462  -0.6471  -0.6471   0.7725   1.8256  
+## 
+## Coefficients:
+##             Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)   1.0566     0.1290   8.191 2.58e-16 ***
+## Sexmale      -2.5137     0.1672 -15.036  &lt; 2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 1186.7  on 890  degrees of freedom
+## Residual deviance:  917.8  on 889  degrees of freedom
+## AIC: 921.8
+## 
+## Number of Fisher Scoring iterations: 4</code></pre>
+<p>If I were to write out the model mathematically it would look like this.</p>
+<p><span class="math display">\[p(x) = 1.0566 - 2.5137*Sex\]</span> <span class="math display">\[\text{sex}=1\text{ if male}, 0\text{ if female}\]</span> <span class="math display">\[p(x) = \text{ The probability of surviving}\]</span></p>
+<p>The value -2.5137 is the <strong>log-odds</strong> which has no common meaning. If we manipulate it by <span class="math inline">\(e^{\beta_1}\)</span> we get the <strong>odds ratio</strong> which has a commonly understood meaning. In this case we get the following <strong>odds ratio</strong></p>
+<pre class="r"><code>exp(gender_model$coefficients[2])</code></pre>
+<pre><code>##    Sexmale 
+## 0.08096732</code></pre>
+<p>The <strong>odds ratio</strong> is 0.081. Because the explanatory variable is categorical, if you are male you are 0.081 times more likely to survive than a female. This is still a little weird to explain, but it does mean you are much more likely to die if you are male. We can switch the survival coding to make it a little more interpretable.</p>
+<pre class="r"><code>gender_model_flip = glm(Survived ~ Sex, data = titanic%&gt;%
+                          mutate(Survived = ifelse(Survived==1,0,1)), family = binomial)
+
+summary(gender_model_flip)</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = Survived ~ Sex, family = binomial, data = titanic %&gt;% 
+##     mutate(Survived = ifelse(Survived == 1, 0, 1)))
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -1.8256  -0.7725   0.6471   0.6471   1.6462  
+## 
+## Coefficients:
+##             Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)  -1.0566     0.1290  -8.191 2.58e-16 ***
+## Sexmale       2.5137     0.1672  15.036  &lt; 2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 1186.7  on 890  degrees of freedom
+## Residual deviance:  917.8  on 889  degrees of freedom
+## AIC: 921.8
+## 
+## Number of Fisher Scoring iterations: 4</code></pre>
+<pre class="r"><code>exp(gender_model_flip$coefficients[2])</code></pre>
+<pre><code>##  Sexmale 
+## 12.35066</code></pre>
+<p>In this case, we would say that you are 12.35 times more likely to die if you are male than female.</p>
+</div>
+<div id="how-well-does-our-model-do" class="section level2">
+<h2>How well does our model do?</h2>
+<pre class="r"><code>titanic_pred = titanic%&gt;%
+  mutate(prediction_probs = predict(gender_model, titanic, type = &quot;response&quot;))%&gt;%
+  mutate(pred_survival = ifelse(prediction_probs&gt;=.5,1,0))
+
+table(titanic_pred$Survived, titanic_pred$pred_survival)</code></pre>
+<pre><code>##    
+##       0   1
+##   0 468  81
+##   1 109 233</code></pre>
+<p>With this simple model we correctly identified 78.7% of the outcomes, but is this good. A naive approach would be that I state everyone survived. In this data set that would result in being correct 61.6% of the time.</p>
+</div>
+<div id="good-i-do-better-with-more-predictors" class="section level2">
+<h2>Good I do better with more predictors?</h2>
+<pre class="r"><code>fitControl = trainControl(
+  method = &quot;cv&quot;,
+  number = 10,
+  savePredictions = TRUE)
+
+titanic_model = train(as.factor(Survived) ~ Sex,
+                      data = titanic,
+                      method = &quot;glm&quot;,
+                      family = binomial(),
+                      trControl = fitControl,
+                      na.action = na.pass)</code></pre>
+<pre class="r"><code>titanic_model</code></pre>
+<pre><code>## Generalized Linear Model 
+## 
+## 891 samples
+##   1 predictor
+##   2 classes: &#39;0&#39;, &#39;1&#39; 
+## 
+## No pre-processing
+## Resampling: Cross-Validated (10 fold) 
+## Summary of sample sizes: 802, 801, 801, 802, 802, 802, ... 
+## Resampling results:
+## 
+##   Accuracy   Kappa    
+##   0.7867348  0.5421422</code></pre>
+<pre class="r"><code>summary(titanic_model)</code></pre>
+<pre><code>## 
+## Call:
+## NULL
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -1.6462  -0.6471  -0.6471   0.7725   1.8256  
+## 
+## Coefficients:
+##             Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)   1.0566     0.1290   8.191 2.58e-16 ***
+## Sexmale      -2.5137     0.1672 -15.036  &lt; 2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 1186.7  on 890  degrees of freedom
+## Residual deviance:  917.8  on 889  degrees of freedom
+## AIC: 921.8
+## 
+## Number of Fisher Scoring iterations: 4</code></pre>
+<pre class="r"><code>titanic_model = train(as.factor(Survived) ~ Sex + Age,
+                      data = titanic,
+                      method = &quot;glm&quot;,
+                      family = binomial(),
+                      trControl = fitControl,
+                      na.action = na.pass)</code></pre>
+<pre class="r"><code>titanic_model</code></pre>
+<pre><code>## Generalized Linear Model 
+## 
+## 891 samples
+##   2 predictor
+##   2 classes: &#39;0&#39;, &#39;1&#39; 
+## 
+## No pre-processing
+## Resampling: Cross-Validated (10 fold) 
+## Summary of sample sizes: 803, 801, 801, 802, 802, 802, ... 
+## Resampling results:
+## 
+##   Accuracy   Kappa    
+##   0.7794228  0.5356102</code></pre>
+<pre class="r"><code>summary(titanic_model)</code></pre>
+<pre><code>## 
+## Call:
+## NULL
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -1.7405  -0.6885  -0.6558   0.7533   1.8989  
+## 
+## Coefficients:
+##              Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)  1.277273   0.230169   5.549 2.87e-08 ***
+## Sexmale     -2.465920   0.185384 -13.302  &lt; 2e-16 ***
+## Age         -0.005426   0.006310  -0.860     0.39    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 964.52  on 713  degrees of freedom
+## Residual deviance: 749.96  on 711  degrees of freedom
+##   (177 observations deleted due to missingness)
+## AIC: 755.96
+## 
+## Number of Fisher Scoring iterations: 4</code></pre>
+<pre class="r"><code>titanic_model = train(as.factor(Survived) ~ Sex + Age + Pclass,
+                      data = titanic,
+                      method = &quot;glm&quot;,
+                      family = binomial(),
+                      trControl = fitControl,
+                      na.action = na.pass)</code></pre>
+<pre class="r"><code>titanic_model</code></pre>
+<pre><code>## Generalized Linear Model 
+## 
+## 891 samples
+##   3 predictor
+##   2 classes: &#39;0&#39;, &#39;1&#39; 
+## 
+## No pre-processing
+## Resampling: Cross-Validated (10 fold) 
+## Summary of sample sizes: 802, 803, 801, 802, 802, 802, ... 
+## Resampling results:
+## 
+##   Accuracy  Kappa    
+##   0.79171   0.5641345</code></pre>
+<pre class="r"><code>summary(titanic_model)</code></pre>
+<pre><code>## 
+## Call:
+## NULL
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -2.7270  -0.6799  -0.3947   0.6483   2.4668  
+## 
+## Coefficients:
+##              Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)  5.056006   0.502128  10.069  &lt; 2e-16 ***
+## Sexmale     -2.522131   0.207283 -12.168  &lt; 2e-16 ***
+## Age         -0.036929   0.007628  -4.841 1.29e-06 ***
+## Pclass      -1.288545   0.139259  -9.253  &lt; 2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 964.52  on 713  degrees of freedom
+## Residual deviance: 647.29  on 710  degrees of freedom
+##   (177 observations deleted due to missingness)
+## AIC: 655.29
+## 
+## Number of Fisher Scoring iterations: 5</code></pre>
+<p>I can now compare the accuracy measures for each of the models and decide on the optimal model.</p>
+<pre class="r"><code>confusionMatrix(titanic_model)</code></pre>
+<pre><code>## Cross-Validated (10 fold) Confusion Matrix 
+## 
+## (entries are percentual average cell counts across resamples)
+##  
+##           Reference
+## Prediction    0    1
+##          0 50.0 11.5
+##          1  9.4 29.1
+##                             
+##  Accuracy (average) : 0.7913</code></pre>
+</div>
+<div id="is-your-model-just-guessing" class="section level2">
+<h2>Is your model just guessing</h2>
+<p>ROC can be seen as a grade. A 1 is an A+, a .5 is an F, or really your model is just guessing.</p>
+<p>Here are two ways to look at it, one visual and one with the numeric calculation.</p>
+<pre class="r"><code>titanic_predictions = predict(gender_model, titanic,
+                              type = &quot;response&quot;)
+
+colAUC(titanic_predictions,titanic$Survived, plotROC = T)</code></pre>
+<p><img src="/post/2019-09-26-classification-models-logistic-regression_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+<pre><code>##              [,1]
+## 0 vs. 1 0.7668728</code></pre>
+<pre class="r"><code>fitControl = trainControl(
+  method = &quot;cv&quot;,
+  number = 10,
+  summaryFunction = twoClassSummary,
+  classProbs = TRUE, # IMPORTANT!
+  verboseIter = TRUE)
+
+titanic_model = train(make.names(Survived) ~ Sex,
+                      data = titanic,
+                      method = &quot;glm&quot;,
+                      trControl = fitControl,
+                      na.action = na.pass)</code></pre>
+<pre><code>## Warning in train.default(x, y, weights = w, ...): The metric &quot;Accuracy&quot; was
+## not in the result set. ROC will be used instead.</code></pre>
+<pre><code>## + Fold01: parameter=none 
+## - Fold01: parameter=none 
+## + Fold02: parameter=none 
+## - Fold02: parameter=none 
+## + Fold03: parameter=none 
+## - Fold03: parameter=none 
+## + Fold04: parameter=none 
+## - Fold04: parameter=none 
+## + Fold05: parameter=none 
+## - Fold05: parameter=none 
+## + Fold06: parameter=none 
+## - Fold06: parameter=none 
+## + Fold07: parameter=none 
+## - Fold07: parameter=none 
+## + Fold08: parameter=none 
+## - Fold08: parameter=none 
+## + Fold09: parameter=none 
+## - Fold09: parameter=none 
+## + Fold10: parameter=none 
+## - Fold10: parameter=none 
+## Aggregating results
+## Fitting final model on full training set</code></pre>
+<pre class="r"><code>titanic_model</code></pre>
+<pre><code>## Generalized Linear Model 
+## 
+## 891 samples
+##   1 predictor
+##   2 classes: &#39;X0&#39;, &#39;X1&#39; 
+## 
+## No pre-processing
+## Resampling: Cross-Validated (10 fold) 
+## Summary of sample sizes: 801, 802, 802, 802, 802, 802, ... 
+## Resampling results:
+## 
+##   ROC        Sens       Spec     
+##   0.7670356  0.8523906  0.6816807</code></pre>
+<p>Age is more continuous which will give a better visualization of the ROC curve</p>
+<pre class="r"><code>age_model = glm(Survived ~ Age, data = titanic, family = binomial)
+
+summary(age_model)</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = Survived ~ Age, family = binomial, data = titanic)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -1.1488  -1.0361  -0.9544   1.3159   1.5908  
+## 
+## Coefficients:
+##             Estimate Std. Error z value Pr(&gt;|z|)  
+## (Intercept) -0.05672    0.17358  -0.327   0.7438  
+## Age         -0.01096    0.00533  -2.057   0.0397 *
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 964.52  on 713  degrees of freedom
+## Residual deviance: 960.23  on 712  degrees of freedom
+##   (177 observations deleted due to missingness)
+## AIC: 964.23
+## 
+## Number of Fisher Scoring iterations: 4</code></pre>
+<pre class="r"><code>titanic_predictions = predict(age_model, titanic,
+                              type = &quot;response&quot;)
+
+colAUC(titanic_predictions,titanic$Survived, plotROC = T)</code></pre>
+<pre><code>## Warning in matrix(rep(idx, nL), nR, nL): data length [1428] is not a sub-
+## multiple or multiple of the number of rows [891]</code></pre>
+<p><img src="/post/2019-09-26-classification-models-logistic-regression_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
+<pre><code>##              [,1]
+## 0 vs. 1 0.5130549</code></pre>
+</div>
+</div>
+
+  </div>
+  <footer>
+    <ul class="stats">
+  
+    
+    
+      <li class="categories">
+        <ul>
+          
+            
+            <li><a class="article-category-link" href="/categories/modeling">modeling</a></li>
+          
+            
+            <li><a class="article-category-link" href="/categories/logistic-regression">logistic regression</a></li>
+          
+        </ul>
+      </li>
+    
+  
+  
+    
+    
+  
+</ul>
+
+  </footer>
+</article>
+<article class="post">
+  
+
+</article>
+<div class="pagination">
+  
+    <a href="/post/classification-models-lda/" class="button big previous"><i class="fas fa-angle-left"></i> Classification Models (LDA)</a>
+  
+  
+    <a href="/post/using-rselenium-for-literature-reivew/" class="button big next">Using RSelenium for Literature Reivew <i class="fas fa-angle-right"></i></a>
+  
+</div>
+
+
+      </main>
+      <section id="site-sidebar">
+  <section id="recent-posts">
+    <header>
+      <h1>Recent posts</h1>
+    </header>
+    
+    <article class="mini-post">
+      <section>
+        
+
+      </section>
+      <header>
+        <h1><a href="/post/cleaning-step-data/">Cleaning Step Data</a></h1>
+        <time class="published" datetime="">September 24, 2019</time>
+      </header>
+    </article>
+    
+    <article class="mini-post">
+      <section>
+        
+
+      </section>
+      <header>
+        <h1><a href="/post/">Post</a></h1>
+        <time class="published" datetime="">September 24, 2019</time>
+      </header>
+    </article>
+    
+    <article class="mini-post">
+      <section>
+        
+
+      </section>
+      <header>
+        <h1><a href="/post/using-rselenium/">Using RSelenium</a></h1>
+        <time class="published" datetime="">September 24, 2019</time>
+      </header>
+    </article>
+    
+    <article class="mini-post">
+      <section>
+        
+
+      </section>
+      <header>
+        <h1><a href="/post/using-rselenium-for-literature-reivew/">Using RSelenium for Literature Reivew</a></h1>
+        <time class="published" datetime="">August 1, 2019</time>
+      </header>
+    </article>
+    
+    <article class="mini-post">
+      <section>
+        
+
+      </section>
+      <header>
+        <h1><a href="/post/classification-models-logistic-regression/">Classification Models (Logistic Regression)</a></h1>
+        <time class="published" datetime="">July 22, 2019</time>
+      </header>
+    </article>
+    
+    
+      <a href="/post" class="button">See more</a>
+    
+  </section>
+
+  
+    
+      <section id="categories">
+        <header>
+          <h1><a href="/categories">Categories</a></h1>
+        </header>
+        <ul>
+          
+            
+          
+          
+          <li>
+            
+              <a href="/categories/modeling/">modeling<span class="count">3</span></a>
+            
+          
+          <li>
+            
+              <a href="/categories/knn/">knn<span class="count">1</span></a>
+            
+          
+          <li>
+            
+              <a href="/categories/lda/">lda<span class="count">1</span></a>
+            
+          
+          <li>
+            
+              <a href="/categories/logistic-regression/">logistic-regression<span class="count">1</span></a>
+            
+          
+          <li>
+            
+              <a href="/categories/using-rselenium/">using-rselenium<span class="count">1</span></a>
+            
+          
+          </li>
+        </ul>
+      </section>
+    
+  
+
+  <section id="mini-bio">
+    <header>
+      <h1>About</h1>
+    </header>
+    <p>I am an assistant professor at the United States Military Academy.  I currently teach MA206Y: Introduction to Data Science and Statistics.  I have served in the Army for 11 years and have a beuatiful wife and two wonderful children</p>
+    <footer>
+      <a href="/about" class="button">Learn More</a>
+    </footer>
+  </section>
+</section>
+
+
+
+    <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script>
+    
+    <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+            displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+            processEscapes: true,
+            processEnvironments: true
+        },
+        // Center justify equations in code and markdown cells. Elsewhere
+        // we use CSS to left justify single line equations in code cells.
+        displayAlign: 'center',
+        "HTML-CSS": {
+            styles: {'.MathJax_Display': {"margin": 0}},
+            linebreaks: { automatic: true }
+        }
+    });
+    </script>
+    
+
+      <footer id="site-footer">
+  
+      <ul class="social-icons">
+        
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li><a href="//twitter.com/@statculus" target="_blank" rel="noopener" title="Twitter" class="fab fa-twitter"></a></li>
+
+
+
+
+
+
+
+
+<li><a href="mailto:bryan.adams@westpoint.edu" target="_blank" title="Email" class="far fa-envelope"></a></li>
+
+      </ul>
+  
+  <p class="copyright">
+    
+      &copy; 2019
+      
+        Bryan Adams Data Analysis
+      
+    .
+    Powered by <a href="//gohugo.io" target="_blank" rel="noopener">Hugo</a>
+  </p>
+</footer>
+<a id="back-to-top" href="#" class="fas fa-arrow-up fa-2x"></a>
+
+      
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/languages/html.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/languages/css.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/languages/js.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/languages/toml.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+
+
+  
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/skel/3.0.1/skel.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.3.5/jquery.fancybox.min.js"></script>
+  <script src=/js/util.js></script>
+  <script src=/js/main.js></script>
+  <script src=/js/add-on.js></script>
+  
+
+
+
+    </div>
+  </body>
+</html>
