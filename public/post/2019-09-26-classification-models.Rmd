@@ -1,0 +1,344 @@
+---
+title: Classification Models (KNN)
+author: ~
+date: '2019-07-20'
+slug: classification-models
+categories: 
+  - modeling
+  - KNN
+tags: []
+description: ''
+featured: ''
+featuredalt: ''
+featuredpath: ''
+linktitle: ''
+---
+
+I had the opportunity to share different classification models with a unit in the Army.  I put these together to help give them what they could do as well as tell them some limitations of the models.  I thought they might be useful for my students.  This post is over KNN.  I will have other post that discuss the other methods.
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(caret)
+set.seed(1234)
+```
+
+# K-Nearest Neighbors
+
+K-Nearest Neighbors (KNN) classifier will classify an unseen instance by comparing it to a "training" set.
+
+A "training" set is a portion of data that you set aside to see how well your method of classify works.  We will cover more on this later.
+
+Once you have a new unseen instance, you compare that instance to your training set.  You then decide how many neighbors (similar observations) you would like to look at (hence the "k").  The nearest neighbors are often picked by using "euclidean" distance most commonly know as straight-line distance.  Here is a basic example of how this method works.
+
+First I am going to create a simulated data set and plot it.
+
+```{r}
+df = data.frame(x = c(2,2.5,1,3,3,4,4.5,4,3.5),
+           y = c(1,4,2,3,4,2,1,5,5), 
+           c = c("success","success", "success", "success",
+                 "failure", "failure", "failure", "failure",
+                 "success"))
+```
+
+```{r plot1, fig.cap="Example plot for using the KNN approach", fig.align="center"}
+df%>%
+  ggplot(aes(x = x, y = y, color = c))+
+  geom_point(size = 5)+
+  labs(color = "", title = "Example K-Nearest Neighbors")+
+  theme(text = element_text(size = 20))
+```
+
+In Figure \@ref(fig:plot1) you see a set of points that are of two classifications, "Success" or "Failure".  Now if we had a new unseen observation, i.e. we do not know if it was a success or failure, we would compare it to the "K" nearest neighbors.
+
+For example, in Figure \@ref(fig:plot2) we have a new unseen observation.
+
+```{r plot2, fig.cap="Example plot of an unseen observation", fig.align="center"}
+df%>%
+  ggplot(aes(x = x, y = y, color = c))+
+  geom_point(size = 5)+
+  labs(color = "", title = "Example K-Nearest Neighbors")+
+  geom_point(aes(x = 2.5, y = 3.5), shape = 7, size = 5)+
+  theme(text = element_text(size = 20))
+```
+
+If we had said we wanted to use "3" as our "k", 2/3 of its neighbors are "success" and 1/3 of its neighbors are "failures".  We would conclude that this unseen observation is a "success".
+
+In Figure \@ref(fig:plot3) we have another unseen observation, if we were to use "4" as our "k" we would have a 50-50 split.  If we use "3" as our "k" we would predict it to be a "failure".  If we use "5" as our "k" we would predict it to b a "success".
+
+```{r plot3, fig.cap="What about K", fig.align="center"}
+df%>%
+  ggplot(aes(x = x, y = y, color = c))+
+  geom_point(size = 5)+
+  labs(color = "", title = "Example K-Nearest Neighbors")+
+  geom_point(aes(x = 3.5, y = 4.5), shape = 7, size = 5)+
+  theme(text = element_text(size = 20))
+```
+
+## An example of using KNN
+
+The following data set is know as the Iris Data set.  This is a common data set used to introduce machine learning.
+
+```{r irisplot, fig.align="center", fig.cap= "The Iris Data set"}
+iris%>%
+  ggplot(aes(x = Petal.Length,Petal.Width,color = Species))+
+  geom_point()
+```
+
+I am going to split my data set into two portions.  The first will be my "training" set.  This is what I will compare my unseen observations to.  My unseen observations will by my "test" set.  
+
+```{r}
+iris_data = iris%>%
+  mutate(id = row_number())
+
+iris_train = iris_data%>%
+  sample_frac(.8)
+
+iris_test = iris_data%>%
+  anti_join(iris_train, by = "id")
+```
+
+Now I will use KNN to decide how I would classify the "test" data set based on a selected "K" nearest neighbors in my "training" data set. Since, I already know the classification so I can see how well I do.  To show this basic example I will be using the "caret" package.  The "caret" package (short for Classification And Regression Training) contains functions to streamline the model training process for complex regression and classification problems.  This is the most trusted package in R for classification problems.
+
+```{r}
+test_predictions = knn3Train(train = iris_train[, 3:4], test = iris_test[, 3:4],
+          cl = iris_train$Species, k = 1)
+```
+
+Next I will make what is known as a confusion matrix to compare my classification to the true classifications.
+
+```{r}
+table(iris_test$Species, test_predictions)
+```
+
+We did well for all the species, but got one wrong.  
+
+```{r compare, fig.align="center", fig.cap="What was correct?"}
+iris_predictions = cbind(iris_test,test_predictions)%>%
+  mutate(correct = ifelse(Species == test_predictions,"yes","no"))
+
+iris_train%>%
+  ggplot(aes(x = Petal.Length, y = Petal.Width, shape = Species))+
+  geom_point(size = 3)+
+  geom_point(data = iris_predictions, aes(x = Petal.Length, y = Petal.Width, color = correct, shape = Species), size = 3)
+```
+
+Since we only used k = 1, we missed out, but now I can move the k up to see if we do better.
+
+```{r}
+test_predictions = knn3Train(train = iris_train[, 3:4], test = iris_test[, 3:4],
+          cl = iris_train$Species, k = 2)
+
+table(iris_test$Species,test_predictions)
+```
+
+```{r}
+test_predictions = knn3Train(train = iris_train[, 3:4], test = iris_test[, 3:4],
+          cl = iris_train$Species, k = 3)
+
+table(iris_test$Species,test_predictions)
+```
+
+## Issues with KNN
+
+### Picking the correct K
+
+A big issue with k-Nearest Neighbors is the choice of a suitable k. How many neighbors should you use to decide on the label of a new observation? 
+
+As you begin increase K you will see benefits in classification, but increase K to much you end up over fitting and your error will increase significantly.  
+
+```{r k1, echo=FALSE, fig.cap = "Using k = 1 decision boundaries", fig.align="center"}
+knnModel <- train(Species ~ Petal.Length+Petal.Width, 
+                  data = iris_train,
+                  method = "knn", 
+                  tuneGrid = expand.grid(k = 1),
+                  trControl = trainControl(method = "repeatedcv", number = 10),
+                  preProcess = c("center","scale"))
+
+pl = seq(min(iris_train$Petal.Length), max(iris_train$Petal.Length), by=0.1)
+pw = seq(min(iris_train$Petal.Width), max(iris_train$Petal.Width), by=0.1)
+
+# generates the boundaries for your graph
+lgrid <- expand.grid(Petal.Length=pl, 
+                     Petal.Width=pw,
+                     Sepal.Length = 5.4,
+                     Sepal.Width=3.1)
+
+knnPredGrids <- predict(knnModel, newdata=lgrid)
+knnPredGrid = as.numeric(knnPredGrids)
+
+probs <- matrix(knnPredGrid, length(pl), length(pw))
+
+iris_train%>%
+  ggplot() + 
+   geom_point(aes(x=Petal.Length,y=Petal.Width, 
+                  color = Species),size=5,shape=1)+
+  stat_contour(data = lgrid, aes(x=Petal.Length, y=Petal.Width,
+                                 z=knnPredGrid),bins=2) +
+  geom_point(data = lgrid, aes(x=Petal.Length, y=Petal.Width,
+                               color=knnPredGrids)) +
+  theme_bw()+
+  labs(x = "Petal Length", y = "Petal Width")+
+  theme(text = element_text(size = 20))
+
+```
+
+```{r k10, echo=FALSE, fig.cap = "Using k = 10 decision boundaries", fig.align="center"}
+knnModel <- train(Species ~ Petal.Length+Petal.Width, 
+                  data = iris_train,
+                  method = "knn", 
+                  tuneGrid = expand.grid(k = 10),
+                  trControl = trainControl(method = "cv", number = 10),
+                  preProcess = c("center","scale"))
+
+pl = seq(min(iris_train$Petal.Length), max(iris_train$Petal.Length), by=0.1)
+pw = seq(min(iris_train$Petal.Width), max(iris_train$Petal.Width), by=0.1)
+
+# generates the boundaries for your graph
+lgrid <- expand.grid(Petal.Length=pl, 
+                     Petal.Width=pw,
+                     Sepal.Length = 5.4,
+                     Sepal.Width=3.1)
+
+knnPredGrids <- predict(knnModel, newdata=lgrid)
+knnPredGrid = as.numeric(knnPredGrids)
+
+probs <- matrix(knnPredGrid, length(pl), length(pw))
+
+iris_train%>%
+  ggplot() + 
+   geom_point(aes(x=Petal.Length,y=Petal.Width, 
+                  color = Species),size=5, 
+              alpha=0.5, shape=1)+
+  stat_contour(data = lgrid, aes(x=Petal.Length, y=Petal.Width,
+                                 z=knnPredGrid),bins=2) +
+  geom_point(data = lgrid, aes(x=Petal.Length, y=Petal.Width,
+                               color=knnPredGrids)) +
+  theme_bw()+
+  labs(x = "Petal Length", y = "Petal Width")+
+  theme(text = element_text(size = 20))
+
+```
+
+### Picking the correct features
+
+
+```{r k1Sepal, echo=FALSE, fig.cap = "Using k = 1 decision boundaries for Sepal Length and Width", fig.align="center"}
+knnModel <- train(Species ~ Sepal.Length+Sepal.Width, 
+                  data = iris_train,
+                  method = "knn", 
+                  tuneGrid = expand.grid(k = 1),
+                  trControl = trainControl(method = "cv", number = 10),
+                  preProcess = c("center","scale"))
+
+pl = seq(min(iris_train$Sepal.Length), max(iris_train$Sepal.Length), by=0.1)
+pw = seq(min(iris_train$Sepal.Width), max(iris_train$Sepal.Width), by=0.1)
+
+# generates the boundaries for your graph
+lgrid <- expand.grid(Sepal.Length=pl, 
+                     Sepal.Width=pw)
+
+knnPredGrids <- predict(knnModel, newdata=lgrid)
+knnPredGrid = as.numeric(knnPredGrids)
+
+probs <- matrix(knnPredGrid, length(pl), length(pw))
+
+iris_train%>%
+  ggplot() + 
+   geom_point(aes(x=Sepal.Length,y=Sepal.Width, 
+                  color = Species),size=5, shape=1)+
+  stat_contour(data = lgrid, aes(x=Sepal.Length, y=Sepal.Width,
+                                 z=knnPredGrid),bins=2) +
+  geom_point(data = lgrid, aes(x=Sepal.Length, y=Sepal.Width,
+                               color=knnPredGrids)) +
+  theme_bw()+
+  labs(x = "Sepal Length", y = "Sepal Width")+
+  theme(text = element_text(size = 20))
+
+```
+
+```{r k10Sepal, echo=FALSE, fig.cap = "Using k = 10 decision boundaries for Sepal Length and Width", fig.align="center"}
+knnModel <- train(Species ~ Sepal.Length+Sepal.Width, 
+                  data = iris_train,
+                  method = "knn", 
+                  tuneGrid = expand.grid(k = 10),
+                  trControl = trainControl(method = "cv", number = 10),
+                  preProcess = c("center","scale"))
+
+pl = seq(min(iris_train$Sepal.Length), max(iris_train$Sepal.Length), by=0.1)
+pw = seq(min(iris_train$Sepal.Width), max(iris_train$Sepal.Width), by=0.1)
+
+# generates the boundaries for your graph
+lgrid <- expand.grid(Sepal.Length=pl, 
+                     Sepal.Width=pw)
+
+knnPredGrids <- predict(knnModel, newdata=lgrid)
+knnPredGrid = as.numeric(knnPredGrids)
+
+probs <- matrix(knnPredGrid, length(pl), length(pw))
+
+iris_train%>%
+  ggplot() + 
+   geom_point(aes(x=Sepal.Length,y=Sepal.Width, 
+                  color = Species),size=5, 
+              alpha=0.5, shape=1)+
+  stat_contour(data = lgrid, aes(x=Sepal.Length, y=Sepal.Width,
+                                 z=knnPredGrid),bins=2) +
+  geom_point(data = lgrid, aes(x=Sepal.Length, y=Sepal.Width,
+                               color=knnPredGrids)) +
+  theme_bw()+
+  labs(x = "Sepal Length", y = "Sepal Width")+
+  theme(text = element_text(size = 20))
+```
+
+
+### Scaling
+
+Scaling your data is an important process when using KNN.  For example we could measure people's height in meters and weight in kilograms.  If we looked at the following people using KNN we would say person 1 and 3 are closer than 1 and 2.  
+
+||Height (ft)|Weight (lbs)|
+|---|----|-----|
+|1|6.25|200|
+|2|6.25|195|
+|3|5|200|
+
+Person 1 and 2 would have a distance of 5, and Person 1 and 3 would have a distance of 1.25.  This is using a rectilinear distance.  The model would say 1 and 3 are more alike, but I think most would argue a 5 lbs difference is less of a difference than a 1 ft 3 in difference in height.
+### Categorical features
+
+Another issue is categorical features.  For example, if we also knew the person spoke a certain language, such as Spanish, French, or Italian.  How could we calculate a straight-line distance.  We often assign a dummy variable for each category (1-yes, 0-no).  Most packages build this in.
+
+## Use the shortcut to take care of these issues
+
+The caret package has the ability to look at several "k" values at one time and pick the best one based on an accuracy measure.  
+
+```{r}
+model_knn = train(Species ~ Petal.Length+Petal.Width,
+                  data = iris_train,
+                  method = "knn", 
+                  tuneGrid = expand.grid(k = 1:10),
+                  trControl = trainControl(method = "cv", number = 10),
+                  preProcess = c("center","scale"))
+```
+
+Now to see what it actually did:
+
+```{r}
+model_knn
+```
+
+See which k it choose, does it make since?
+
+```{r}
+model_knn$bestTune
+
+```
+
+How good does it do on our unseen observations?
+
+```{r}
+predictions = predict(object = model_knn, newdata = iris_test)
+
+confusionMatrix(predictions, iris_test$Species)
+```
+
