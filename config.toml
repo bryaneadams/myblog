@@ -57,7 +57,7 @@ disableLanguages        = [""]
   # required for proper functionality. HTML is supported within the params.
   [params.intro]
     header                = "Bryan Adams' Blog"
-    paragraph             = ""
+    paragraph             = "Beat Navy!"
     rssIntro              = true
     socialIntro           = true
 
