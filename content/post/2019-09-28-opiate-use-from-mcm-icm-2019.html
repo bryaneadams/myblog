@@ -1,0 +1,169 @@
+---
+title: Opiate Use (From MCM/ICM 2019)
+author: ~
+date: '2019-06-01'
+slug: opiate-use-from-mcm-icm-2019
+categories: 
+  - visualizations
+tags: []
+description: ''
+featured: ''
+featuredalt: ''
+featuredpath: ''
+linktitle: ''
+---
+
+
+
+<p>The 2019 MCM/ICM was the first time they had a data problem. I thought it would be fun to use this data to learn how to use <code>ggplot2</code> to create maps. Using <code>dplyr</code>, <code>ggplot2</code> and <code>sf</code> make it really easy to create visualizations to see what is happening spatially.</p>
+<pre class="r"><code>library(tidyverse)
+library(sf)</code></pre>
+<pre class="r"><code>drug.use = read_csv(&quot;opiate_files/MCM_NFLIS_Data.csv&quot;)</code></pre>
+<p>Lets do some very basic data exploration. Perhaps the first question is how many zip codes do I have by year?</p>
+<pre class="r"><code>drug.use%&gt;%
+  count(YYYY)</code></pre>
+<pre><code>## # A tibble: 8 x 2
+##    YYYY     n
+##   &lt;int&gt; &lt;int&gt;
+## 1  2010  2836
+## 2  2011  2701
+## 3  2012  2764
+## 4  2013  2861
+## 5  2014  2860
+## 6  2015  2858
+## 7  2016  3329
+## 8  2017  3853</code></pre>
+<p>How about by year and state?</p>
+<pre class="r"><code>drug.use%&gt;%
+  count(YYYY,State)%&gt;%
+  spread(State,n)</code></pre>
+<pre><code>## # A tibble: 8 x 6
+##    YYYY    KY    OH    PA    VA    WV
+##   &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt;
+## 1  2010   624   686   501   822   203
+## 2  2011   647   682   522   624   226
+## 3  2012   665   660   502   696   241
+## 4  2013   634   639   496   861   231
+## 5  2014   710   704   485   739   222
+## 6  2015   667   805   525   675   186
+## 7  2016   708   957   620   842   202
+## 8  2017   774  1221   711   959   188</code></pre>
+<p>It seems that we do not have the same number of zip codes each year.</p>
+<p>First I am going to look at 2010 and 2017 to see if there has been a significant change over time. I believe it might be easier to first look at counties, but then I will expand into zip codes. I will start with Ohio because in the news it seems to have a lot of problems with opiates.</p>
+<pre class="r"><code>Ohio.Avg.10 = drug.use%&gt;%
+  filter(State==&quot;OH&quot;)%&gt;%
+  filter(YYYY==2010)%&gt;%
+  group_by(COUNTY)%&gt;%
+  summarise(Mean.Drug.Reports = mean(DrugReports))</code></pre>
+<pre class="r"><code>Ohio.Avg.17 = drug.use%&gt;%
+  filter(State==&quot;OH&quot;)%&gt;%
+  filter(YYYY==2017)%&gt;%
+  group_by(COUNTY)%&gt;%
+  summarise(Mean.Drug.Reports = mean(DrugReports))</code></pre>
+<p>Sometimes it is nice to look at spatial data on a map. I am going to read in a “.shp” (a shapefile). This will allow me to create a map of Ohio. The shapefile can be found at <href = "https://gis.dot.state.oh.us/tims/Data/Download">data.gov&lt;&gt;. There are several files and you need to ensure they are put into the proper directory.</p>
+<pre class="r"><code>OH.map = st_read(&quot;opiate_files/REFER_COUNTY.shp&quot;)</code></pre>
+<pre><code>## Reading layer `REFER_COUNTY&#39; from data source `C:\Users\Bryan.Adams\Desktop\Research\myblog\content\post\opiate_files\REFER_COUNTY.shp&#39; using driver `ESRI Shapefile&#39;
+## Simple feature collection with 88 features and 23 fields
+## geometry type:  MULTIPOLYGON
+## dimension:      XY
+## bbox:           xmin: -9442133 ymin: 4636534 xmax: -8963324 ymax: 5157571
+## epsg (SRID):    3857
+## proj4string:    +proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs</code></pre>
+<pre class="r"><code>OH.map%&gt;%
+  ggplot()+
+  geom_sf()</code></pre>
+<p><img src="/post/2019-09-28-opiate-use-from-mcm-icm-2019_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p>Next I am going to fill the counties by average opiate cases.</p>
+<pre class="r"><code>opiate.map.2010 = OH.map%&gt;%
+  full_join(Ohio.Avg.10, by  = &quot;COUNTY&quot;)
+
+opiate.map.2017 = OH.map%&gt;%
+  full_join(Ohio.Avg.17, by  = &quot;COUNTY&quot;)</code></pre>
+<pre class="r"><code>opiate.map.2010%&gt;%
+  ggplot()+
+  geom_sf(aes(fill = Mean.Drug.Reports))+
+  scale_fill_gradient2(low = &quot;green&quot;,
+                       high = &quot;red&quot;,
+                       midpoint = 100)</code></pre>
+<p><img src="/post/2019-09-28-opiate-use-from-mcm-icm-2019_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<pre class="r"><code>opiate.map.2017%&gt;%
+  ggplot()+
+  geom_sf(aes(fill = Mean.Drug.Reports))+
+  scale_fill_gradient2(low = &quot;green&quot;,
+                       high = &quot;red&quot;,
+                       midpoint = 100)</code></pre>
+<p><img src="/post/2019-09-28-opiate-use-from-mcm-icm-2019_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<p>Now I am going to make the map look really nice by overlaying the roads and cities.</p>
+<pre class="r"><code>Ohio.Roads = st_read(&quot;opiate_files/WGIS_STS_HIGHWAY.shp&quot;)</code></pre>
+<pre><code>## Reading layer `WGIS_STS_HIGHWAY&#39; from data source `C:\Users\Bryan.Adams\Desktop\Research\myblog\content\post\opiate_files\WGIS_STS_HIGHWAY.shp&#39; using driver `ESRI Shapefile&#39;
+## Simple feature collection with 219 features and 11 fields
+## geometry type:  MULTILINESTRING
+## dimension:      XY
+## bbox:           xmin: -9442126 ymin: 4637255 xmax: -8963350 ymax: 5151581
+## epsg (SRID):    3857
+## proj4string:    +proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs</code></pre>
+<pre class="r"><code>Ohio.Cities = st_read(&quot;opiate_files/REFER_CITY.shp&quot;)</code></pre>
+<pre><code>## Reading layer `REFER_CITY&#39; from data source `C:\Users\Bryan.Adams\Desktop\Research\myblog\content\post\opiate_files\REFER_CITY.shp&#39; using driver `ESRI Shapefile&#39;
+## Simple feature collection with 933 features and 16 fields
+## geometry type:  MULTIPOLYGON
+## dimension:      XY
+## bbox:           xmin: -9442130 ymin: 4636673 xmax: -8963345 ymax: 5157614
+## epsg (SRID):    3857
+## proj4string:    +proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs</code></pre>
+<pre class="r"><code>Ohio.Cities%&gt;%
+  filter(POP_2010&gt;=100000)%&gt;%
+  st_centroid()%&gt;%
+  ggplot()+
+  geom_sf()</code></pre>
+<p><img src="/post/2019-09-28-opiate-use-from-mcm-icm-2019_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<pre class="r"><code>opiate.map.2010%&gt;%
+  ggplot()+
+  geom_sf(aes(fill = Mean.Drug.Reports))+
+  scale_fill_gradient2(low = &quot;green&quot;,
+                       high = &quot;red&quot;,
+                       midpoint = 100)+
+  geom_sf(data = Ohio.Roads, color = &quot;blue&quot;)</code></pre>
+<p><img src="/post/2019-09-28-opiate-use-from-mcm-icm-2019_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<p>Now lets say I want to do it for multiple states. Each state generally provides its own shapefiles with different information. The unfortunate aspect is that they sometimes do not contain the same structure. fortunately the US government has established a large database of shape files at <a href = "https://www.census.gov/cgi-bin/geo/shapefiles/index.php">census.gov</a>. Now I do not need to map every state, only the states I am interested in. This file contains states “FIPS” codes. This code numbers the states alphabetically and is used for census purposes.</p>
+<pre class="r"><code>US_County_Map = read_sf(&quot;opiate_files/tl_2018_us_county.shp&quot;)
+
+US_County_Map%&gt;%
+  filter(STATEFP%in%c(21,39,42,51,54))%&gt;%
+  ggplot()+
+  geom_sf()</code></pre>
+<p><img src="/post/2019-09-28-opiate-use-from-mcm-icm-2019_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+<p>Now we have a map for all of the counties that could be in the data set. I am going to take every county’s data and merge it with the map and make a map similar to the Ohio map. I will have to make some changes to each file to assist.</p>
+<pre class="r"><code>avg_drug_use = drug.use%&gt;%
+  group_by(FIPS_State,COUNTY,YYYY)%&gt;%
+  summarise(Mean.Drug.Reports = mean(DrugReports))%&gt;%
+  rename(STATEFP = FIPS_State)%&gt;%
+  ungroup()%&gt;%
+  mutate(STATEFP = as.character(STATEFP))%&gt;%
+  mutate(COUNTY = Hmisc::capitalize(tolower(COUNTY)))
+
+full_map_data = US_County_Map%&gt;%
+  filter(STATEFP%in%c(21,39,42,51,54))%&gt;%
+  rename(COUNTY = NAME)%&gt;%
+  mutate(COUNTY = Hmisc::capitalize(COUNTY))%&gt;%
+  full_join(avg_drug_use, by = c(&quot;STATEFP&quot;,&quot;COUNTY&quot;))</code></pre>
+<p>Now I can make a map for 2010.</p>
+<pre class="r"><code>full_map_data%&gt;%
+  filter(YYYY == 2010|is.na(YYYY))%&gt;%
+  ggplot()+
+  geom_sf(aes(fill = Mean.Drug.Reports))+
+  scale_fill_gradient2(low = &quot;green&quot;,
+                       high = &quot;red&quot;,
+                       midpoint = 100)</code></pre>
+<p><img src="/post/2019-09-28-opiate-use-from-mcm-icm-2019_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
+<p>Now I would like to see it for 2010 - 2017 and identify where are opiate cases spreading.</p>
+<pre class="r"><code>full_map_data%&gt;%
+  filter(!is.na(YYYY))%&gt;%
+  ggplot()+
+  geom_sf(aes(fill = Mean.Drug.Reports))+
+  scale_fill_gradient2(low = &quot;green&quot;,
+                       high = &quot;red&quot;,
+                       midpoint = 100)+
+  facet_wrap(~YYYY)+
+  labs(title = &quot;How are opiate cases spreading?&quot;,fill = &quot;Average (by zip code) \n reported opiate cases&quot;)+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))</code></pre>
+<p><img src="/post/2019-09-28-opiate-use-from-mcm-icm-2019_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
