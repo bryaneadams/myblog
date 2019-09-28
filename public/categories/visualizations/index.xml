@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>visualizations on Bryan Adams Data Analysis</title>
+    <link>/categories/visualizations/</link>
+    <description>Recent content in visualizations on Bryan Adams Data Analysis</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Sat, 01 Jun 2019 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/categories/visualizations/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Opiate Use (From MCM/ICM 2019)</title>
+      <link>/post/opiate-use-from-mcm-icm-2019/</link>
+      <pubDate>Sat, 01 Jun 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/post/opiate-use-from-mcm-icm-2019/</guid>
+      <description>The 2019 MCM/ICM was the first time they had a data problem. I thought it would be fun to use this data to learn how to use ggplot2 to create maps. Using dplyr, ggplot2 and sf make it really easy to create visualizations to see what is happening spatially.
+library(tidyverse)library(sf)drug.use = read_csv(&amp;quot;opiate_files/MCM_NFLIS_Data.csv&amp;quot;)Lets do some very basic data exploration. Perhaps the first question is how many zip codes do I have by year?</description>
+    </item>
+    
+  </channel>
+</rss>
