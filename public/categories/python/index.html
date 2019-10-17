@@ -81,13 +81,13 @@
   
     
       
+        <a href="/fr" lang="fr" class="no-lang"><span class="flag-icon flag-icon-fr" alt="fr"></span></a>
+      
+    
+      
     
       
         <a href="/pl" lang="pl" class="no-lang"><span class="flag-icon flag-icon-pl" alt="pl"></span></a>
-      
-    
-      
-        <a href="/fr" lang="fr" class="no-lang"><span class="flag-icon flag-icon-fr" alt="fr"></span></a>
       
     
   
@@ -233,26 +233,7 @@
   
 
   
-  <pre><code class="language-python">from keras.models import Sequential
-from keras.layers import Dense, Conv2D, Flatten, MaxPooling2D
-from keras.datasets import mnist
-from matplotlib import pyplot
-from keras.utils import to_categorical
-</code></pre>
-
-<h3 id="the-mnist-dataset">The mnist dataset</h3>
-
-<pre><code class="language-python">(x_train, y_train), (x_test, y_test) = mnist.load_data()
-</code></pre>
-
-<pre><code class="language-python">for i in range(9):
-    # define subplot
-    pyplot.subplot(330 + 1 + i)
-    # plot raw pixel data
-    pyplot.imshow(x_train[i], cmap=pyplot.get_cmap('gray'))
-</code></pre>
-
-<p><img src="Conv2DPractice_3_0.png" alt="png" /></p>
+  <p>As part of an honors thesis I have cadets working on using RCNNs for image detection.  The easiest place for them to begin is to learn CNNs.  In <code>keras</code> there is the <code>mnist</code> data set.  It is a data set of handwritten digits.  It is a great data set to use to familiarize yourself with what images look like to a computer and how to build CNNs. This post attempts to provide a first time student information on how to use keras to build CNNs.</p>
   <footer>
     <a href="/post/cnn-with-keras/" class="button big">Read more</a>
     <ul class="stats">
@@ -267,6 +248,9 @@ from keras.utils import to_categorical
           
             
             <li><a class="article-category-link" href="/categories/python">Python</a></li>
+          
+            
+            <li><a class="article-category-link" href="/categories/modeling">Modeling</a></li>
           
         </ul>
       </li>
@@ -372,7 +356,7 @@ from keras.utils import to_categorical
           
           <li>
             
-              <a href="/categories/modeling/">modeling<span class="count">3</span></a>
+              <a href="/categories/modeling/">modeling<span class="count">4</span></a>
             
           
           <li>

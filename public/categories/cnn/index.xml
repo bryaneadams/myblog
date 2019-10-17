@@ -17,7 +17,7 @@
       <pubDate>Wed, 16 Oct 2019 00:00:00 +0000</pubDate>
       
       <guid>/post/cnn-with-keras/</guid>
-      <description>from keras.models import Sequential from keras.layers import Dense, Conv2D, Flatten, MaxPooling2D from keras.datasets import mnist from matplotlib import pyplot from keras.utils import to_categorical  The mnist dataset (x_train, y_train), (x_test, y_test) = mnist.load_data()  for i in range(9): # define subplot pyplot.subplot(330 + 1 + i) # plot raw pixel data pyplot.imshow(x_train[i], cmap=pyplot.get_cmap(&#39;gray&#39;))  Reshape the data For example, we know that the images are all pre-aligned (e.g. each image only contains a hand-drawn digit), that the images all have the same square size of 28 � 28 pixels, and that the images are grayscale.</description>
+      <description>As part of an honors thesis I have cadets working on using RCNNs for image detection. The easiest place for them to begin is to learn CNNs. In keras there is the mnist data set. It is a data set of handwritten digits. It is a great data set to use to familiarize yourself with what images look like to a computer and how to build CNNs. This post attempts to provide a first time student information on how to use keras to build CNNs.</description>
     </item>
     
   </channel>
