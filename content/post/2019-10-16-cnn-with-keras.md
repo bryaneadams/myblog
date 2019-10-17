@@ -6,7 +6,7 @@ slug: cnn-with-keras
 categories: 
   - CNN
   - Python
-  - Modeling
+  - modeling
 tags: []
 description: ''
 featured: ''
