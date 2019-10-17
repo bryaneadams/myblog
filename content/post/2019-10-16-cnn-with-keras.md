@@ -6,6 +6,7 @@ slug: cnn-with-keras
 categories: 
   - CNN
   - Python
+  - Modeling
 tags: []
 description: ''
 featured: ''
@@ -13,6 +14,8 @@ featuredalt: ''
 featuredpath: ''
 linktitle: ''
 ---
+
+As part of an honors thesis I have cadets working on using RCNNs for image detection.  The easiest place for them to begin is to learn CNNs.  In `keras` there is the `mnist` data set.  It is a data set of handwritten digits.  It is a great data set to use to familiarize yourself with what images look like to a computer and how to build CNNs. This post attempts to provide a first time student information on how to use keras to build CNNs.  
 
 ```python
 from keras.models import Sequential
@@ -44,7 +47,7 @@ for i in range(9):
 
 ### Reshape the data
 
-For example, we know that the images are all pre-aligned (e.g. each image only contains a hand-drawn digit), that the images all have the same square size of `28 × 28` pixels, and that the images are grayscale.
+For example, we know that the images are all pre-aligned (e.g. each image only contains a hand-drawn digit), that the images all have the same square size of `28 × 28` pixels, and that the images are gray scale.
 
 Therefore, we can load the images and reshape the data arrays to have a single color channel.
 
@@ -59,12 +62,7 @@ The image is in gray scale so each pixel has a number 0 - 255 for the shade of g
 x_train.shape
 ```
 
-
-
-
     (60000, 28, 28)
-
-
 
 Here is a breakdown of the numbers:
     
@@ -78,9 +76,6 @@ Here is what a single image looks like in data form
 ```python
 x_train[1]
 ```
-
-
-
 
     array([[  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
               0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
@@ -202,12 +197,7 @@ The new shape
 x_train.shape
 ```
 
-
-
-
     (60000, 28, 28, 1)
-
-
 
 #### What an image looks like now
 
@@ -215,9 +205,6 @@ x_train.shape
 ```python
 x_train[0]
 ```
-
-
-
 
     array([[[  0],
             [  0],
@@ -277,9 +264,9 @@ x_train[0]
             [  0],
             [  0]],...], dtype=uint8)
 
-It looks different and here is why.  Becuase we added a channel you will now have a new sub list in the orginal list.
+It looks different and here is why.  Because we added a channel you will now have a new sub list in the original list.
 
-The orginal list looked like this:
+The original list looked like this:
 
 `[  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
           0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
@@ -319,9 +306,6 @@ Here is what it looks like now
 y_train
 ```
 
-
-
-
     array([[0., 0., 0., ..., 0., 0., 0.],
            [1., 0., 0., ..., 0., 0., 0.],
            [0., 0., 0., ..., 0., 0., 0.],
@@ -351,7 +335,7 @@ model.add(Conv2D(10, kernel_size = 3, activation = 'relu',strides=(1, 1),
 
 1. `10`.  This is the number of filters.  A filter could be related to anything.  One filter could be associated with finding the edges, one could be finding the number of edges...
 
-2. `kernel_size = 3`.  This specifies the height and width of the convolotion window.  In this case our convolution window is a `3 x 3` matrix, which means it exams 9 pixels (`3x3`) at one time.
+2. `kernel_size = 3`.  This specifies the height and width of the convolution window.  In this case our convolution window is a `3 x 3` matrix, which means it exams 9 pixels (`3x3`) at one time.
 
 3. `strides = (1,1)`.  This is the number of pixels your convolution window moves.  It moves `1` horizontally until it hits the far side, starts over `1` row down and continues until it finishes the image.
 
@@ -361,7 +345,7 @@ model.add(Conv2D(10, kernel_size = 3, activation = 'relu',strides=(1, 1),
 
 #### A convolution explained
 
-The objective of the Convolution Operation is to extract the high-level features such as edges, from the input image.  In this network there filters/kernals that are 3 x 3.  They move along the image at a stride length of 1.  Here is to pictures the explain what is happening.  Each time the dot product is used to calculate the "pink" element of the output matrix.  
+The objective of the Convolution Operation is to extract the high-level features such as edges, from the input image.  In this network there filters/kernels that are 3 x 3.  They move along the image at a stride length of 1.  Here is to pictures the explain what is happening.  Each time the dot product is used to calculate the "pink" element of the output matrix.  
 
 <img src="Conv1.png"> <img src="Conv2.png"> 
 
@@ -380,20 +364,20 @@ $S = $strides
 
 #### Pooling
 
-Pooling layer is responsible for reducing the spatial size of the Convolved Feature. This is to decrease the computational power required to process the data through dimensionality reduction. Furthermore, it is useful for extracting dominant features which are rotational and positional invariant, thus maintaining the process of effectively training of the model.
+Pooling layer is responsible for reducing the spatial size of the Convoluted Feature. This is to decrease the computational power required to process the data through dimensionality reduction. Furthermore, it is useful for extracting dominant features which are rotational and positional invariant, thus maintaining the process of effectively training of the model.
 
 
 ```python
 model.add(MaxPooling2D((2,2)))
 ```
 
-In this case the `Max Pooling` will reduce the dimensionality by half.  We stareted with `28 x 28`.  Each convoluted layer will be `26 x 26` and with a pooling of `(2,2)` the pooled layers become `13 x 13`.  Below is an example of how `Max Pooling` works.  It takes the max value out of a `2x2` matrix.
+In this case the `Max Pooling` will reduce the dimensionality by half.  We started with `28 x 28`.  Each convoluted layer will be `26 x 26` and with a pooling of `(2,2)` the pooled layers become `13 x 13`.  Below is an example of how `Max Pooling` works.  It takes the max value out of a `2x2` matrix.
 
 <img src = "Pooling.PNG">
 
 ### Add another Max Pooling layer becuase it makes it work a lot better
 
-Now the layers dimensions will change from `13 x 13` to `6 x 6` becuase $13$ is odd.
+Now the layers dimensions will change from `13 x 13` to `6 x 6` because $13$ is odd.
 
 
 ```python
@@ -422,7 +406,7 @@ model.add(Dense(100,activation = 'relu'))
 
 ### Add an output layer for the 10 categories
 
-We are adding 10 nodes in the output layer becuase there are 10 numbers `(0-9)`
+We are adding 10 nodes in the output layer because there are 10 numbers `(0-9)`
 
 
 ```python
@@ -461,13 +445,7 @@ model.fit(x_train, y_train,
     Epoch 3/3
     48000/48000 [==============================] - 22s 453us/step - loss: 0.0957 - acc: 0.9710 - val_loss: 0.1051 - val_acc: 0.9706
 
-
-
-
-
     <keras.callbacks.History at 0x7f3b8ff31940>
-
-
 
 ### Evaluate the model on separate test data
 
@@ -478,26 +456,13 @@ model.evaluate(x_test,y_test,batch_size=10)
 
     10000/10000 [==============================] - 2s 171us/step
 
-
-
-
-
     [0.0985311105441906, 0.9700999952554703]
-
-
-
 
 ```python
 x_test[1:2].shape
 ```
 
-
-
-
     (1, 28, 28, 1)
-
-
-
 
 ```python
 for i in range(9):
@@ -520,12 +485,7 @@ for i in range(9):
 prediction
 ```
 
-
-
-
     [7, 2, 1, 0, 4, 1, 4, 9, 5]
-
-
 
 ### Model Summary
 
@@ -557,12 +517,12 @@ model.summary()
 
 ### How to determine the number of parameters
 
-1. conv2d - $100$ parameters.  There are 10 convolutions and the kernal is `3 x 3`.  Each portion of the kernal has a paramter that is trained.  $3*3*10 = 90$ you then add $10$ for the bias parameters. The total is $90 + 10 = 100$
+1. conv2d - $100$ parameters.  There are 10 convolutions and the kernel is `3 x 3`.  Each portion of the kernel has a parameter that is trained.  $3*3*10 = 90$ you then add $10$ for the bias parameters. The total is $90 + 10 = 100$
 2. max_pooling2d  - 0, but note how it reduced the dimensionality
 3. max_pooling2d  - 0, but note how it reduced the dimensionality
 3. flatten - 0
-4. dense - $36100$ parameters.  This comes from $6*6=36$ (this is from the dimensions of the pooled layer. $36*10 = 360$ becuase you have 10 convolutions.  $360*100 = 36000$ becuase of the dense layer of $100$ nodes.  $36000+100 = 36100$ becuase of the $100$ bias paramters.
-5. dense_15 - $1010$ paramters.  This comes from $100*10 = 1000$ becuase $100$ nodes are fully connected to $10$ nodes. $1000+10 = 1010$ becuase of the 10 bias terms.
+4. dense - $36100$ parameters.  This comes from $6*6=36$ (this is from the dimensions of the pooled layer. $36*10 = 360$ because you have 10 convolutions.  $360*100 = 36000$ because of the dense layer of $100$ nodes.  $36000+100 = 36100$ because of the $100$ bias parameters.
+5. dense_15 - $1010$ parameters.  This comes from $100*10 = 1000$ because $100$ nodes are fully connected to $10$ nodes. $1000+10 = 1010$ because of the 10 bias terms.
 
 
 
