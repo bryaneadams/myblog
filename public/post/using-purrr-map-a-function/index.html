@@ -1,0 +1,957 @@
+<!doctype html>
+<html lang="en">
+  <head>
+  <meta charset="utf-8">
+<title>Using purrr  - map a function - Bryan Adams Data Analysis</title>
+<meta name="description" content="A theme by HTML5 UP, ported by Julio Pescador. Slimmed and enhanced by Patrick Collins. Multilingual by StatnMap. Powered by Hugo.">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+
+  <meta name="generator" content="Hugo 0.55.6" />
+  
+<meta itemprop="name" content="Using purrr  - map a function">
+<meta itemprop="description" content="Why write functionsIf you ever find yourself doing a task a second time you should write a function. Functions are a nice way to quickly and consistently calculate something. They also provide you a nice way of organizing your code. This class will walk through the basics of programming functions and introduce purrr which enhances R’s functional programming (FP) toolkit by providing a complete and consistent set of tools for working with functions and vectors.">
+
+
+<meta itemprop="datePublished" content="2019-10-22T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2019-10-22T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="2516">
+
+
+
+<meta itemprop="keywords" content="" />
+
+  <meta property="og:title" content="Using purrr  - map a function" />
+<meta property="og:description" content="Why write functionsIf you ever find yourself doing a task a second time you should write a function. Functions are a nice way to quickly and consistently calculate something. They also provide you a nice way of organizing your code. This class will walk through the basics of programming functions and introduce purrr which enhances R’s functional programming (FP) toolkit by providing a complete and consistent set of tools for working with functions and vectors." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="/post/using-purrr-map-a-function/" />
+<meta property="article:published_time" content="2019-10-22T00:00:00&#43;00:00"/>
+<meta property="article:modified_time" content="2019-10-22T00:00:00&#43;00:00"/>
+
+  <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Using purrr  - map a function"/>
+<meta name="twitter:description" content="Why write functionsIf you ever find yourself doing a task a second time you should write a function. Functions are a nice way to quickly and consistently calculate something. They also provide you a nice way of organizing your code. This class will walk through the basics of programming functions and introduce purrr which enhances R’s functional programming (FP) toolkit by providing a complete and consistent set of tools for working with functions and vectors."/>
+<meta name="twitter:site" content="@@statculus"/>
+
+  
+
+  <link rel="stylesheet"
+      href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/github.min.css">
+  
+    
+      <link rel="stylesheet" href="/css/normalize.css">
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway:400,800,900|Source+Sans+Pro:400,700">
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.1.0/css/flag-icon.min.css">
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.8.6/css/academicons.min.css">
+      <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.10/css/all.css" integrity="sha384-+d0P83n9kaQMCwj8F4RJB66tzIwOKmrdb46+porD/OvrJ+37WqIM7UoBtwHO6Nlg" crossorigin="anonymous">
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.3.5/jquery.fancybox.min.css" />
+      <link rel="stylesheet" href="/css/main.min.css">
+      <link rel="stylesheet" href="/css/add-on.css">
+    
+  
+  
+</head>
+
+  <body>
+    
+<header id="site-header">
+  <nav id="site-nav">
+    <h1 class="nav-title">
+      <a href="/">
+        
+          
+            post
+          
+        
+      </a>
+    </h1>
+    <menu id="site-nav-menu" class="flyout-menu">
+      
+        <a href="/" class="link"><i class="fas fa-home">&nbsp;</i>Home</a>
+      
+        <a href="/about/" class="link"><i class="far fa-id-card">&nbsp;</i>Curriculum vitae</a>
+      
+        <a href="/categories/" class="link"><i class="fas fa-sitemap">&nbsp;</i>Categories</a>
+      
+      <a href="#share-menu" class="share-toggle"><i class="fas fa-share-alt">&nbsp;</i>Share</a>
+      
+
+    </menu>
+    
+
+    <a href="#share-menu" class="share-toggle"><i class="fas fa-share-alt fa-2x">&nbsp;</i></a>
+    <a href="#lang-menu" class="lang-toggle" lang="en"><span class="flag-icon flag-icon-en" alt="en"></span></a>
+    <a href="#site-nav" class="nav-toggle"><i class="fas fa-bars fa-2x"></i></a>
+  </nav>
+  <menu id="lang-menu" class="flyout-menu">
+  <a href="#" lang="en" class="active"><span class="flag-icon flag-icon-en" alt="en"></span></a>
+  
+    
+      
+    
+      
+        <a href="/pl" lang="pl" class="no-lang"><span class="flag-icon flag-icon-pl" alt="pl"></span></a>
+      
+    
+      
+        <a href="/fr" lang="fr" class="no-lang"><span class="flag-icon flag-icon-fr" alt="fr"></span></a>
+      
+    
+  
+</menu>
+
+  
+    <menu id="share-menu" class="flyout-menu">
+      <h1>Share Post</h1>
+      
+
+
+
+  
+    <a href="//twitter.com/share?url=&amp;text=&amp" target="_blank" rel="noopener" class="share-btn twitter">
+        <i class="fab fa-twitter"></i><p>&nbsp;Twitter</p>
+      </a>
+  
+
+  
+      <a href="//www.facebook.com/sharer/sharer.php?u=" target="_blank" rel="noopener" class="share-btn facebook">
+        <i class="fab fa-facebook"></i><p>&nbsp;Facebook</p>
+        </a>
+  
+
+  
+    <a href="//reddit.com/submit?url=&amp;title=" target="_blank" rel="noopener" class="share-btn reddit">
+          <i class="fab fa-reddit-alien"></i><p>&nbsp;Reddit</p>
+        </a>
+  
+
+  
+        <a href="//www.linkedin.com/shareArticle?url=&amp;title=" target="_blank" rel="noopener" class="share-btn linkedin">
+            <i class="fab fa-linkedin"></i><p>&nbsp;LinkedIn</p>
+          </a>
+  
+
+  
+        <a href="//www.stumbleupon.com/submit?url=&amp;title=" target="_blank" rel="noopener" class="share-btn stumbleupon">
+          <i class="fab fa-stumbleupon"></i><p>&nbsp;StumbleUpon</p>
+        </a>
+  
+
+  
+        <a href="//www.pinterest.com/pin/create/button/?url=&amp;description=" target="_blank" rel="noopener" class="share-btn pinterest">
+          <i class="fab fa-pinterest-p"></i><p>&nbsp;Pinterest</p>
+        </a>
+  
+
+  
+        <a href="mailto:?subject=Check out this post by &amp;body=" target="_blank" class="share-btn email">
+          <i class="fas fa-envelope"></i><p>&nbsp;Email</p>
+        </a>
+  
+
+
+    </menu>
+  
+</header>
+
+    <div id="wrapper">
+      <section id="site-intro">
+  <a href="/"><img src="/img/main/MyPic.jpg" class="circle" width="" alt="Hugo Future Imperfect Slim" /></a>
+  <header>
+    <h1>Bryan Adams' Blog</h1>
+  </header>
+  <main>
+    <p>Beat Navy!</p>
+  </main>
+  
+    <footer>
+      <ul class="social-icons">
+        
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li><a href="//twitter.com/@statculus" target="_blank" rel="noopener" title="Twitter" class="fab fa-twitter"></a></li>
+
+
+
+
+
+
+
+
+<li><a href="mailto:bryan.adams@westpoint.edu" target="_blank" title="Email" class="far fa-envelope"></a></li>
+
+      </ul>
+    </footer>
+  
+</section>
+
+      <main id="site-main">
+        <article class="post">
+  <header>
+  <div class="title">
+    
+        <h2><a href="/post/using-purrr-map-a-function/">Using purrr  - map a function</a></h2>
+    
+    
+</div>
+  <div class="meta">
+    <time class="published" datetime="2019-10-22 00:00:00 &#43;0000 UTC">
+      October 22, 2019
+    </time>
+    <span class="author"></span>
+    
+        <p>12 minute read</p>
+    
+  </div>
+</header>
+
+  <section id="social-share">
+    
+
+
+
+  
+    <a href="//twitter.com/share?url=&amp;text=&amp" target="_blank" rel="noopener" class="share-btn twitter">
+        <i class="fab fa-twitter"></i><p>&nbsp;Twitter</p>
+      </a>
+  
+
+  
+      <a href="//www.facebook.com/sharer/sharer.php?u=" target="_blank" rel="noopener" class="share-btn facebook">
+        <i class="fab fa-facebook"></i><p>&nbsp;Facebook</p>
+        </a>
+  
+
+  
+    <a href="//reddit.com/submit?url=&amp;title=" target="_blank" rel="noopener" class="share-btn reddit">
+          <i class="fab fa-reddit-alien"></i><p>&nbsp;Reddit</p>
+        </a>
+  
+
+  
+        <a href="//www.linkedin.com/shareArticle?url=&amp;title=" target="_blank" rel="noopener" class="share-btn linkedin">
+            <i class="fab fa-linkedin"></i><p>&nbsp;LinkedIn</p>
+          </a>
+  
+
+  
+        <a href="//www.stumbleupon.com/submit?url=&amp;title=" target="_blank" rel="noopener" class="share-btn stumbleupon">
+          <i class="fab fa-stumbleupon"></i><p>&nbsp;StumbleUpon</p>
+        </a>
+  
+
+  
+        <a href="//www.pinterest.com/pin/create/button/?url=&amp;description=" target="_blank" rel="noopener" class="share-btn pinterest">
+          <i class="fab fa-pinterest-p"></i><p>&nbsp;Pinterest</p>
+        </a>
+  
+
+  
+        <a href="mailto:?subject=Check out this post by &amp;body=" target="_blank" class="share-btn email">
+          <i class="fas fa-envelope"></i><p>&nbsp;Email</p>
+        </a>
+  
+
+
+  </section>
+  
+
+  <div class="content">
+    
+
+
+<div id="why-write-functions" class="section level2">
+<h2>Why write functions</h2>
+<p>If you ever find yourself doing a task a second time you should write a function. Functions are a nice way to quickly and consistently calculate something. They also provide you a nice way of organizing your code. This class will walk through the basics of programming functions and introduce <code>purrr</code> which enhances R’s functional programming (FP) toolkit by providing a complete and consistent set of tools for working with functions and vectors.</p>
+</div>
+<div id="functions-in-r" class="section level2">
+<h2>Functions in R</h2>
+<div id="creating-a-function" class="section level3">
+<h3>Creating a function</h3>
+<p>Here is how you can create a basic function in R</p>
+<pre class="r"><code>my_function = function(x){
+  
+  y = x + 2
+  return(y)
+}</code></pre>
+<p>I have include commands that you do not need, but they do help you keep track of what your function is doing. Here is a breakdown of the information:</p>
+<p>1.<code>my_function</code>: This is the name 2. <code>function(x)</code>: What I send to the function will be called <code>x</code> inside of the function 3. <code>{code}</code>: This is the code the function executes. 4. <code>return(y)</code>: This is what your function returns.</p>
+</div>
+<div id="calling-the-function" class="section level3">
+<h3>Calling the function</h3>
+<p>To call a function, you just use the name of the function:</p>
+<pre class="r"><code>my_function(2)</code></pre>
+<pre><code>## [1] 4</code></pre>
+<p>You will notice it returned <code>4</code>.</p>
+</div>
+<div id="you-could-also-take-a-few-shortcuts-when-writing-functions" class="section level3">
+<h3>You could also take a few shortcuts when writing functions</h3>
+<pre class="r"><code>my_function = function(x){
+  
+  x + 2
+  
+}
+
+my_function(2)</code></pre>
+<pre><code>## [1] 4</code></pre>
+</div>
+</div>
+<div id="what-about-sending-a-lot-of-values" class="section level2">
+<h2>What about sending a lot of values:</h2>
+<p>Enter <code>purrr</code>. In the past you may have used <code>lapply()</code> or <code>sapply()</code> but get of the bench, get in the game, and start using <code>purrr</code>.</p>
+<pre class="r"><code>library(purrr)</code></pre>
+<div id="enter-map" class="section level3">
+<h3>Enter <code>map</code></h3>
+<p>The <code>map()</code> functions transform their input by applying a function to each element and returning a vector the same length as the input.</p>
+<p>The <code>map()</code> function is <code>map(.x,.f,...)</code> for each element of <code>.x.</code> do function <code>.f</code></p>
+<pre class="r"><code>my_list = list(1,2,3)
+
+my_list%&gt;%
+  map(my_function)</code></pre>
+<pre><code>## [[1]]
+## [1] 3
+## 
+## [[2]]
+## [1] 4
+## 
+## [[3]]
+## [1] 5</code></pre>
+<p>With <code>map</code> I sent it a list and it returned a list.</p>
+<pre class="r"><code>my_list%&gt;%
+  map(my_function)%&gt;%
+  class()</code></pre>
+<pre><code>## [1] &quot;list&quot;</code></pre>
+<p>If is send it a vector…it returns a list.</p>
+<pre class="r"><code>vector = c(1,2,3)
+
+vector%&gt;%
+  map(my_function)%&gt;%
+  class()</code></pre>
+<pre><code>## [1] &quot;list&quot;</code></pre>
+</div>
+<div id="what-about-returning-numeric-values." class="section level3">
+<h3>What about returning numeric values.</h3>
+<p><code>map_dbl</code> is like map, but it returns a <code>numeric</code> vector.</p>
+<pre class="r"><code>my_list%&gt;%
+  map_dbl(my_function)</code></pre>
+<pre><code>## [1] 3 4 5</code></pre>
+<p>You get a <code>numeric</code> output.</p>
+<pre class="r"><code>my_list%&gt;%
+  map_dbl(my_function)%&gt;%
+  class()</code></pre>
+<pre><code>## [1] &quot;numeric&quot;</code></pre>
+<div id="it-works-with-lots-of-data-types" class="section level4">
+<h4>It works with lots of data types</h4>
+<pre class="r"><code>df &lt;- tibble(
+  a = rnorm(10),
+  b = rnorm(10),
+  c = rnorm(10),
+  d = rnorm(10)
+)
+
+df%&gt;%
+  map_dbl(mean)</code></pre>
+<pre><code>##          a          b          c          d 
+## -0.2510839  0.3848666 -0.2806608  0.6360516</code></pre>
+</div>
+</div>
+<div id="being-safe" class="section level3">
+<h3>Being Safe</h3>
+<p>We always need to be safe, so lets see how we can be safe with <code>safely</code>. This example seems trivial but as you expand your understanding of <code>lists()</code> and using <code>map()</code> it will help you figure out where and why your errors are occurring.</p>
+<pre class="r"><code>my_list = list(&quot;string&quot;,0.1,0.2)
+
+my_function = function(x){
+  log(x)
+}
+
+my_list%&gt;%
+  map(my_function)</code></pre>
+<pre><code>## Error in log(x): non-numeric argument to mathematical function</code></pre>
+<p>No one likes when errors occur. Now lets be SAFE!!!</p>
+<pre class="r"><code>my_list%&gt;%
+  map(safely(my_function))</code></pre>
+<pre><code>## [[1]]
+## [[1]]$result
+## NULL
+## 
+## [[1]]$error
+## &lt;simpleError in log(x): non-numeric argument to mathematical function&gt;
+## 
+## 
+## [[2]]
+## [[2]]$result
+## [1] -2.302585
+## 
+## [[2]]$error
+## NULL
+## 
+## 
+## [[3]]
+## [[3]]$result
+## [1] -1.609438
+## 
+## [[3]]$error
+## NULL</code></pre>
+<pre class="r"><code>my_list%&gt;%
+  map(safely(my_function))%&gt;%
+  transpose()</code></pre>
+<pre><code>## $result
+## $result[[1]]
+## NULL
+## 
+## $result[[2]]
+## [1] -2.302585
+## 
+## $result[[3]]
+## [1] -1.609438
+## 
+## 
+## $error
+## $error[[1]]
+## &lt;simpleError in log(x): non-numeric argument to mathematical function&gt;
+## 
+## $error[[2]]
+## NULL
+## 
+## $error[[3]]
+## NULL</code></pre>
+</div>
+</div>
+<div id="taking-a-side-step-to-get-some-nfl-data" class="section level2">
+<h2>Taking a side step to get some NFL data</h2>
+<p>There is a lot going on here, so I will not go into the webscrapping. The bottom line is, noone has created the following command: <code>give_me_what_I_want()</code>. You will see me use <code>map2()</code>, which is explained afterwards.</p>
+<pre class="r"><code>library(rvest)
+library(stringr)
+
+url=&quot;https://www.espn.com/nfl/stats/team/_/season/&quot;
+
+list_pages = function(x){
+  
+  page = str_c(url, x, &#39;/seasontype/2&#39;)
+  
+}
+
+get_season_data = function(year,url){
+  
+  stats = url%&gt;%
+    read_html()%&gt;%
+    html_nodes(&quot;.Table__Scroller div , .Table__Scroller .Table__sub-header .Table__TH&quot;)%&gt;%
+    html_text()%&gt;%
+    matrix(ncol = 9, byrow = TRUE)%&gt;%
+    as_tibble()
+
+  team_names = url%&gt;%
+    read_html()%&gt;%
+    html_nodes(&quot;.Table--fixed-left .Table__TD , .Table__TH div&quot;)%&gt;%
+    html_text()%&gt;%
+    as_tibble()
+
+  season_stats = bind_cols(team_names,stats)
+
+  colnames(season_stats) = unlist(season_stats[1,])
+
+  season_stats%&gt;%
+    slice(-1)%&gt;%
+    write_csv(paste0(&quot;Off_Stats_&quot;,year,&quot;.csv&quot;))
+  
+}
+
+years = c(2017:2018)
+
+years%&gt;%
+  map(list_pages)%&gt;%
+  map2(years,.,get_season_data)</code></pre>
+<pre><code>## [[1]]
+## # A tibble: 32 x 10
+##    Team       GP    YDS   `YDS/G` YDS   `YDS/G` YDS   `YDS/G` PTS   `PTS/G`
+##    &lt;chr&gt;      &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt; &lt;chr&gt;  
+##  1 New Engla~ 16    6,307 394.2   4,418 276.1   1,889 118.1   458   28.6   
+##  2 New Orlea~ 16    6,259 391.2   4,189 261.8   2,070 129.4   448   28.0   
+##  3 Pittsburg~ 16    6,047 377.9   4,380 273.8   1,667 104.2   406   25.4   
+##  4 Los Angel~ 16    6,026 376.6   4,431 276.9   1,595 99.7    355   22.2   
+##  5 Kansas Ci~ 16    6,007 375.4   4,104 256.5   1,903 118.9   415   25.9   
+##  6 Jacksonvi~ 16    5,855 365.9   3,593 224.6   2,262 141.4   417   26.1   
+##  7 Philadelp~ 16    5,852 365.8   3,737 233.6   2,115 132.2   457   28.6   
+##  8 Atlanta F~ 16    5,837 364.8   3,990 249.4   1,847 115.4   353   22.1   
+##  9 Tampa Bay~ 16    5,816 363.5   4,366 272.9   1,450 90.6    335   20.9   
+## 10 Los Angel~ 16    5,784 361.5   3,831 239.4   1,953 122.1   478   29.9   
+## # ... with 22 more rows
+## 
+## [[2]]
+## # A tibble: 32 x 10
+##    Team       GP    YDS   `YDS/G` YDS   `YDS/G` YDS   `YDS/G` PTS   `PTS/G`
+##    &lt;chr&gt;      &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt; &lt;chr&gt;  
+##  1 Kansas Ci~ 16    6,810 425.6   4,955 309.7   1,855 115.9   565   35.3   
+##  2 Los Angel~ 16    6,738 421.1   4,507 281.7   2,231 139.4   527   32.9   
+##  3 Tampa Bay~ 16    6,648 415.5   5,125 320.3   1,523 95.2    396   24.8   
+##  4 Pittsburg~ 16    6,453 403.3   5,008 313.0   1,445 90.3    428   26.8   
+##  5 New Engla~ 16    6,295 393.4   4,258 266.1   2,037 127.3   436   27.3   
+##  6 Atlanta F~ 16    6,226 389.1   4,653 290.8   1,573 98.3    414   25.9   
+##  7 Indianapo~ 16    6,179 386.2   4,461 278.8   1,718 107.4   433   27.1   
+##  8 New Orlea~ 16    6,067 379.2   4,042 252.6   2,025 126.6   504   31.5   
+##  9 Baltimore~ 16    5,999 374.9   3,558 222.4   2,441 152.6   389   24.3   
+## 10 Carolina ~ 16    5,972 373.3   3,836 239.8   2,136 133.5   376   23.5   
+## # ... with 22 more rows</code></pre>
+<pre class="r"><code># Without piping...
+
+pages = years%&gt;%
+  map(list_pages)
+
+map2(years,pages,get_season_data)</code></pre>
+<pre><code>## [[1]]
+## # A tibble: 32 x 10
+##    Team       GP    YDS   `YDS/G` YDS   `YDS/G` YDS   `YDS/G` PTS   `PTS/G`
+##    &lt;chr&gt;      &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt; &lt;chr&gt;  
+##  1 New Engla~ 16    6,307 394.2   4,418 276.1   1,889 118.1   458   28.6   
+##  2 New Orlea~ 16    6,259 391.2   4,189 261.8   2,070 129.4   448   28.0   
+##  3 Pittsburg~ 16    6,047 377.9   4,380 273.8   1,667 104.2   406   25.4   
+##  4 Los Angel~ 16    6,026 376.6   4,431 276.9   1,595 99.7    355   22.2   
+##  5 Kansas Ci~ 16    6,007 375.4   4,104 256.5   1,903 118.9   415   25.9   
+##  6 Jacksonvi~ 16    5,855 365.9   3,593 224.6   2,262 141.4   417   26.1   
+##  7 Philadelp~ 16    5,852 365.8   3,737 233.6   2,115 132.2   457   28.6   
+##  8 Atlanta F~ 16    5,837 364.8   3,990 249.4   1,847 115.4   353   22.1   
+##  9 Tampa Bay~ 16    5,816 363.5   4,366 272.9   1,450 90.6    335   20.9   
+## 10 Los Angel~ 16    5,784 361.5   3,831 239.4   1,953 122.1   478   29.9   
+## # ... with 22 more rows
+## 
+## [[2]]
+## # A tibble: 32 x 10
+##    Team       GP    YDS   `YDS/G` YDS   `YDS/G` YDS   `YDS/G` PTS   `PTS/G`
+##    &lt;chr&gt;      &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt; &lt;chr&gt;  
+##  1 Kansas Ci~ 16    6,810 425.6   4,955 309.7   1,855 115.9   565   35.3   
+##  2 Los Angel~ 16    6,738 421.1   4,507 281.7   2,231 139.4   527   32.9   
+##  3 Tampa Bay~ 16    6,648 415.5   5,125 320.3   1,523 95.2    396   24.8   
+##  4 Pittsburg~ 16    6,453 403.3   5,008 313.0   1,445 90.3    428   26.8   
+##  5 New Engla~ 16    6,295 393.4   4,258 266.1   2,037 127.3   436   27.3   
+##  6 Atlanta F~ 16    6,226 389.1   4,653 290.8   1,573 98.3    414   25.9   
+##  7 Indianapo~ 16    6,179 386.2   4,461 278.8   1,718 107.4   433   27.1   
+##  8 New Orlea~ 16    6,067 379.2   4,042 252.6   2,025 126.6   504   31.5   
+##  9 Baltimore~ 16    5,999 374.9   3,558 222.4   2,441 152.6   389   24.3   
+## 10 Carolina ~ 16    5,972 373.3   3,836 239.8   2,136 133.5   376   23.5   
+## # ... with 22 more rows</code></pre>
+<div id="map2-and-pmap" class="section level3">
+<h3><code>map2()</code> and <code>pmap()</code></h3>
+<p>You also might want to send multiple lists at one time. In the past you would have had to use multiple <code>for</code> loops.</p>
+<ol style="list-style-type: decimal">
+<li><code>map2()</code> - you send 2 lists</li>
+<li><code>pmap()</code> - you send multiple lists</li>
+</ol>
+<p>Above I sent <code>years</code> and <code>pages</code> to my function.</p>
+</div>
+</div>
+<div id="what-about-mappers" class="section level2">
+<h2>What about mappers</h2>
+<p>A mapper is an anonymous function. That is just cool sounding for you never create the function. Here is an example of me putting a function inside of map.</p>
+<pre class="r"><code>list.files(pattern = &quot;*.csv&quot;)%&gt;%
+  map(function(file_name){
+    assign(x = str_extract(file_name,&quot;[^.]+&quot;),
+           value = read_csv(file_name),
+           envir = .GlobalEnv)
+  })</code></pre>
+<pre><code>## [[1]]
+## # A tibble: 32 x 10
+##    Team      GP   YDS `YDS/G` YDS_1 `YDS/G_1` YDS_2 `YDS/G_2`   PTS `PTS/G`
+##    &lt;chr&gt;  &lt;int&gt; &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt;
+##  1 New E~    16  6307    394.  4418      276.  1889     118.    458    28.6
+##  2 New O~    16  6259    391.  4189      262.  2070     129.    448    28  
+##  3 Pitts~    16  6047    378.  4380      274.  1667     104.    406    25.4
+##  4 Los A~    16  6026    377.  4431      277.  1595      99.7   355    22.2
+##  5 Kansa~    16  6007    375.  4104      256.  1903     119.    415    25.9
+##  6 Jacks~    16  5855    366.  3593      225.  2262     141.    417    26.1
+##  7 Phila~    16  5852    366.  3737      234.  2115     132.    457    28.6
+##  8 Atlan~    16  5837    365.  3990      249.  1847     115.    353    22.1
+##  9 Tampa~    16  5816    364.  4366      273.  1450      90.6   335    20.9
+## 10 Los A~    16  5784    362.  3831      239.  1953     122.    478    29.9
+## # ... with 22 more rows
+## 
+## [[2]]
+## # A tibble: 32 x 10
+##    Team      GP   YDS `YDS/G` YDS_1 `YDS/G_1` YDS_2 `YDS/G_2`   PTS `PTS/G`
+##    &lt;chr&gt;  &lt;int&gt; &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt;
+##  1 Kansa~    16  6810    426.  4955      310.  1855     116.    565    35.3
+##  2 Los A~    16  6738    421.  4507      282.  2231     139.    527    32.9
+##  3 Tampa~    16  6648    416.  5125      320.  1523      95.2   396    24.8
+##  4 Pitts~    16  6453    403.  5008      313   1445      90.3   428    26.8
+##  5 New E~    16  6295    393.  4258      266.  2037     127.    436    27.3
+##  6 Atlan~    16  6226    389.  4653      291.  1573      98.3   414    25.9
+##  7 India~    16  6179    386.  4461      279.  1718     107.    433    27.1
+##  8 New O~    16  6067    379.  4042      253.  2025     127.    504    31.5
+##  9 Balti~    16  5999    375.  3558      222.  2441     153.    389    24.3
+## 10 Carol~    16  5972    373.  3836      240.  2136     134.    376    23.5
+## # ... with 22 more rows</code></pre>
+<p>Now here is the same thing, but without using a function inside of map but using a mapper.</p>
+<pre class="r"><code>list.files(pattern = &quot;*.csv&quot;)%&gt;%
+  map(~assign(x = str_extract(.,&quot;[^.]+&quot;),
+           value = read_csv(.),
+           envir = .GlobalEnv)
+  )</code></pre>
+<pre><code>## [[1]]
+## # A tibble: 32 x 10
+##    Team      GP   YDS `YDS/G` YDS_1 `YDS/G_1` YDS_2 `YDS/G_2`   PTS `PTS/G`
+##    &lt;chr&gt;  &lt;int&gt; &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt;
+##  1 New E~    16  6307    394.  4418      276.  1889     118.    458    28.6
+##  2 New O~    16  6259    391.  4189      262.  2070     129.    448    28  
+##  3 Pitts~    16  6047    378.  4380      274.  1667     104.    406    25.4
+##  4 Los A~    16  6026    377.  4431      277.  1595      99.7   355    22.2
+##  5 Kansa~    16  6007    375.  4104      256.  1903     119.    415    25.9
+##  6 Jacks~    16  5855    366.  3593      225.  2262     141.    417    26.1
+##  7 Phila~    16  5852    366.  3737      234.  2115     132.    457    28.6
+##  8 Atlan~    16  5837    365.  3990      249.  1847     115.    353    22.1
+##  9 Tampa~    16  5816    364.  4366      273.  1450      90.6   335    20.9
+## 10 Los A~    16  5784    362.  3831      239.  1953     122.    478    29.9
+## # ... with 22 more rows
+## 
+## [[2]]
+## # A tibble: 32 x 10
+##    Team      GP   YDS `YDS/G` YDS_1 `YDS/G_1` YDS_2 `YDS/G_2`   PTS `PTS/G`
+##    &lt;chr&gt;  &lt;int&gt; &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt;
+##  1 Kansa~    16  6810    426.  4955      310.  1855     116.    565    35.3
+##  2 Los A~    16  6738    421.  4507      282.  2231     139.    527    32.9
+##  3 Tampa~    16  6648    416.  5125      320.  1523      95.2   396    24.8
+##  4 Pitts~    16  6453    403.  5008      313   1445      90.3   428    26.8
+##  5 New E~    16  6295    393.  4258      266.  2037     127.    436    27.3
+##  6 Atlan~    16  6226    389.  4653      291.  1573      98.3   414    25.9
+##  7 India~    16  6179    386.  4461      279.  1718     107.    433    27.1
+##  8 New O~    16  6067    379.  4042      253.  2025     127.    504    31.5
+##  9 Balti~    16  5999    375.  3558      222.  2441     153.    389    24.3
+## 10 Carol~    16  5972    373.  3836      240.  2136     134.    376    23.5
+## # ... with 22 more rows</code></pre>
+<div id="just-make-a-mapper" class="section level3">
+<h3>Just make a mapper!!!</h3>
+<p>You can also make mapper objects.</p>
+<pre class="r"><code>read_my_csv = as_mapper(~assign(x = str_extract(.x,&quot;[^.]+&quot;),
+           value = read_csv(.x),
+           envir = .GlobalEnv))</code></pre>
+<p>You can use mappers instead of functions.</p>
+<pre class="r"><code>list.files(pattern = &quot;*.csv&quot;)%&gt;%
+  map(read_my_csv)</code></pre>
+<pre><code>## [[1]]
+## # A tibble: 32 x 10
+##    Team      GP   YDS `YDS/G` YDS_1 `YDS/G_1` YDS_2 `YDS/G_2`   PTS `PTS/G`
+##    &lt;chr&gt;  &lt;int&gt; &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt;
+##  1 New E~    16  6307    394.  4418      276.  1889     118.    458    28.6
+##  2 New O~    16  6259    391.  4189      262.  2070     129.    448    28  
+##  3 Pitts~    16  6047    378.  4380      274.  1667     104.    406    25.4
+##  4 Los A~    16  6026    377.  4431      277.  1595      99.7   355    22.2
+##  5 Kansa~    16  6007    375.  4104      256.  1903     119.    415    25.9
+##  6 Jacks~    16  5855    366.  3593      225.  2262     141.    417    26.1
+##  7 Phila~    16  5852    366.  3737      234.  2115     132.    457    28.6
+##  8 Atlan~    16  5837    365.  3990      249.  1847     115.    353    22.1
+##  9 Tampa~    16  5816    364.  4366      273.  1450      90.6   335    20.9
+## 10 Los A~    16  5784    362.  3831      239.  1953     122.    478    29.9
+## # ... with 22 more rows
+## 
+## [[2]]
+## # A tibble: 32 x 10
+##    Team      GP   YDS `YDS/G` YDS_1 `YDS/G_1` YDS_2 `YDS/G_2`   PTS `PTS/G`
+##    &lt;chr&gt;  &lt;int&gt; &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt;
+##  1 Kansa~    16  6810    426.  4955      310.  1855     116.    565    35.3
+##  2 Los A~    16  6738    421.  4507      282.  2231     139.    527    32.9
+##  3 Tampa~    16  6648    416.  5125      320.  1523      95.2   396    24.8
+##  4 Pitts~    16  6453    403.  5008      313   1445      90.3   428    26.8
+##  5 New E~    16  6295    393.  4258      266.  2037     127.    436    27.3
+##  6 Atlan~    16  6226    389.  4653      291.  1573      98.3   414    25.9
+##  7 India~    16  6179    386.  4461      279.  1718     107.    433    27.1
+##  8 New O~    16  6067    379.  4042      253.  2025     127.    504    31.5
+##  9 Balti~    16  5999    375.  3558      222.  2441     153.    389    24.3
+## 10 Carol~    16  5972    373.  3836      240.  2136     134.    376    23.5
+## # ... with 22 more rows</code></pre>
+</div>
+<div id="why-mappers-instead-of-functions" class="section level3">
+<h3>Why mappers instead of functions</h3>
+<p><code>as_mapper</code> creats mappers using <code>{rlang}</code> <code>as_function</code> This turns your formula into a function.</p>
+<p>If you use a defualt function in <code>map</code> you are using a mapper!</p>
+</div>
+</div>
+
+  </div>
+  <footer>
+    <ul class="stats">
+  
+    
+    
+  
+  
+    
+    
+  
+</ul>
+
+  </footer>
+</article>
+<article class="post">
+  
+
+</article>
+<div class="pagination">
+  
+    <a href="/post/cnn-with-keras/" class="button big previous"><i class="fas fa-angle-left"></i> CNN with keras</a>
+  
+  
+</div>
+
+
+      </main>
+      <section id="site-sidebar">
+  <section id="recent-posts">
+    <header>
+      <h1>Recent posts</h1>
+    </header>
+    
+    <article class="mini-post">
+      <section>
+        
+
+      </section>
+      <header>
+        <h1><a href="/post/">Post</a></h1>
+        <time class="published" datetime="">October 22, 2019</time>
+      </header>
+    </article>
+    
+    <article class="mini-post">
+      <section>
+        
+
+      </section>
+      <header>
+        <h1><a href="/post/using-purrr-map-a-function/">Using purrr  - map a function</a></h1>
+        <time class="published" datetime="">October 22, 2019</time>
+      </header>
+    </article>
+    
+    <article class="mini-post">
+      <section>
+        
+
+      </section>
+      <header>
+        <h1><a href="/post/cnn-with-keras/">CNN with keras</a></h1>
+        <time class="published" datetime="">October 16, 2019</time>
+      </header>
+    </article>
+    
+    <article class="mini-post">
+      <section>
+        
+
+      </section>
+      <header>
+        <h1><a href="/post/using-rselenium-for-literature-reivew/">Using RSelenium for Literature Reivew</a></h1>
+        <time class="published" datetime="">August 1, 2019</time>
+      </header>
+    </article>
+    
+    <article class="mini-post">
+      <section>
+        
+
+      </section>
+      <header>
+        <h1><a href="/post/classification-models-logistic-regression/">Classification Models (Logistic Regression)</a></h1>
+        <time class="published" datetime="">July 22, 2019</time>
+      </header>
+    </article>
+    
+    
+      <a href="/post" class="button">See more</a>
+    
+  </section>
+
+  
+    
+      <section id="categories">
+        <header>
+          <h1><a href="/categories">Categories</a></h1>
+        </header>
+        <ul>
+          
+            
+          
+          
+          <li>
+            
+              <a href="/categories/modeling/">modeling<span class="count">4</span></a>
+            
+          
+          <li>
+            
+              <a href="/categories/cnn/">cnn<span class="count">1</span></a>
+            
+          
+          <li>
+            
+              <a href="/categories/knn/">knn<span class="count">1</span></a>
+            
+          
+          <li>
+            
+              <a href="/categories/lda/">lda<span class="count">1</span></a>
+            
+          
+          <li>
+            
+              <a href="/categories/logistic-regression/">logistic-regression<span class="count">1</span></a>
+            
+          
+          <li>
+            
+              <a href="/categories/python/">python<span class="count">1</span></a>
+            
+          
+          <li>
+            
+              <a href="/categories/using-rselenium/">using-rselenium<span class="count">1</span></a>
+            
+          
+          <li>
+            
+              <a href="/categories/visualizations/">visualizations<span class="count">1</span></a>
+            
+          
+          </li>
+        </ul>
+      </section>
+    
+  
+
+  <section id="mini-bio">
+    <header>
+      <h1>About</h1>
+    </header>
+    <p>I am an assistant professor at the United States Military Academy.  I currently teach MA206Y: Introduction to Data Science and Statistics.  I have served in the Army for 11 years and have a beuatiful wife and two wonderful children</p>
+    <footer>
+      <a href="/about" class="button">Learn More</a>
+    </footer>
+  </section>
+</section>
+
+
+
+    <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script>
+    
+    <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+            displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+            processEscapes: true,
+            processEnvironments: true
+        },
+        // Center justify equations in code and markdown cells. Elsewhere
+        // we use CSS to left justify single line equations in code cells.
+        displayAlign: 'center',
+        "HTML-CSS": {
+            styles: {'.MathJax_Display': {"margin": 0}},
+            linebreaks: { automatic: true }
+        }
+    });
+    </script>
+    
+
+      <footer id="site-footer">
+  
+      <ul class="social-icons">
+        
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li><a href="//twitter.com/@statculus" target="_blank" rel="noopener" title="Twitter" class="fab fa-twitter"></a></li>
+
+
+
+
+
+
+
+
+<li><a href="mailto:bryan.adams@westpoint.edu" target="_blank" title="Email" class="far fa-envelope"></a></li>
+
+      </ul>
+  
+  <p class="copyright">
+    
+      &copy; 2019
+      
+        Bryan Adams Data Analysis
+      
+    .
+    Powered by <a href="//gohugo.io" target="_blank" rel="noopener">Hugo</a>
+  </p>
+</footer>
+<a id="back-to-top" href="#" class="fas fa-arrow-up fa-2x"></a>
+
+      
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/languages/html.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/languages/css.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/languages/js.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/languages/toml.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+
+
+  
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/skel/3.0.1/skel.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.3.5/jquery.fancybox.min.js"></script>
+  <script src=/js/util.js></script>
+  <script src=/js/main.js></script>
+  <script src=/js/add-on.js></script>
+  
+
+
+
+    </div>
+  </body>
+</html>

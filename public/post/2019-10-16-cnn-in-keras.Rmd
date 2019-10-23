@@ -1,0 +1,13 @@
+---
+title: CNN in keras
+author: ~
+date: '2019-10-16'
+slug: cnn-in-keras
+categories: []
+tags: []
+description: ''
+featured: ''
+featuredalt: ''
+featuredpath: ''
+linktitle: ''
+---
